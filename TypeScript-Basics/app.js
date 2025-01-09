@@ -59,3 +59,5 @@ var newUser = {
 console.log(newUser);
 //any data type can create variable,array or object
 var dynamicDataType = 23;
+var test;
+console.log(test, typeof (test));

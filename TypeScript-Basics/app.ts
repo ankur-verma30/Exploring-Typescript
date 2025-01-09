@@ -82,3 +82,6 @@ console.log(newUser);
 
 //any data type can create variable,array or object
 let dynamicDataType :any=23;
+
+let test;
+console.log(test,typeof(test));
