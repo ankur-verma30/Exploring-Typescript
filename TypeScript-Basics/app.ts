@@ -47,41 +47,86 @@ let student: {
 console.log(student);
 
 //arrays in typeScript
-let human=['John',28,"Male","Software Engineer"]
-let numbers=[22,23,4,56,34,34,3532,44]
+let human = ["John", 28, "Male", "Software Engineer"];
+let numbers = [22, 23, 4, 56, 34, 34, 3532, 44];
 // numbers.push("Hello world!"); will give an errro but compiles if we do it forcefully and in javascript it may not give an error
 console.log(numbers);
 
 //tupes
-let employee=["John",28,"Male","2000","Software Engineer",true] //this is the regular array
+let employee = ["John", 28, "Male", "2000", "Software Engineer", true]; //this is the regular array
 
 //tuple is a array
-let employee1:[string,number,string,boolean]=["Ankur",21,"Software Engineer",true]
+let employee1: [string, number, string, boolean] = [
+  "Ankur",
+  21,
+  "Software Engineer",
+  true,
+];
 console.log(employee1);
 
-
-const user={
-    name:"Ankur Verma",
-    age:21,
-    role:0,
-}
+const user = {
+  name: "Ankur Verma",
+  age: 21,
+  role: 0,
+};
 console.log(user);
 
 //using enum syntax
 enum UserPositions {
-    ADMIN, READ_ONLY,WRITE_ONLY,READ_WRITE
+  ADMIN,
+  READ_ONLY,
+  WRITE_ONLY,
+  READ_WRITE,
 }
-const newUser={
-    name:"Ankur Verma",
-    age:21,
-    gender:"Male",
-    roles:UserPositions.ADMIN,
-}
+const newUser = {
+  name: "Ankur Verma",
+  age: 21,
+  gender: "Male",
+  roles: UserPositions.ADMIN,
+};
 
 console.log(newUser);
 
 //any data type can create variable,array or object
-let dynamicDataType :any=23;
+let dynamicDataType: any = 23;
 
 let test;
-console.log(test,typeof(test));
+console.log(test, typeof test);
+
+/*
+let userData: {name:String, age:Number} | null=null;
+function getUser(){
+  const userName: String='John';
+  const userAge: Number=28,
+  userData={name:userName,age:userAge};
+  return userData;
+}
+*/
+
+function printStatus(message: string, code: Number | string) {
+  if (typeof code === "string") code = code.trim();
+  console.log(`The message is ${message} and the code is ${code}`);
+}
+
+printStatus("dummy text", 500);
+printStatus("dummy text", " 500");
+
+//Literal Type
+const str2 = "Hello World!"; //this is a literal type its type is it's value
+let str3 = "Some String"; //But this is a string type
+
+function roleMessage(role: 'admin' | 'read') {
+  switch (role) {
+    case "admin":
+      console.log("You are a admin in this site");
+      break;
+    case "read":
+      console.log("You have read condition");
+      break;
+    default:
+      console.log("Unknown user permission");
+  }
+}
+
+
+roleMessage('admin') //if we passing anything else from admin or read then it will give an error
