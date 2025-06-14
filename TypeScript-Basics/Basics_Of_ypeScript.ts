@@ -64,6 +64,9 @@ let employee1: [string, number, string, boolean] = [
 ];
 console.log(employee1);
 
+employee1.push(100);
+console.log('Updated employee',employee1);
+
 const user = {
   name: "Ankur Verma",
   age: 21,

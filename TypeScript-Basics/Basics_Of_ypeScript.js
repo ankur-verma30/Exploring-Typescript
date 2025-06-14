@@ -41,6 +41,8 @@ var employee1 = [
     true,
 ];
 console.log(employee1);
+employee1.push(100);
+console.log('Updated employee', employee1);
 var user = {
     name: "Ankur Verma",
     age: 21,
@@ -82,7 +84,6 @@ function printStatus(message, code) {
 }
 printStatus("dummy text", 500);
 printStatus("dummy text", " 500");
-
 //Literal Type
 var str2 = "Hello World!"; //this is a literal type its type is it's value
 var str3 = "Some String"; //But this is a string type
@@ -98,4 +99,4 @@ function roleMessage(role) {
             console.log("Unknown user permission");
     }
 }
-roleMessage('admin');
+roleMessage('admin'); //if we passing anything else from admin or read then it will give an error
