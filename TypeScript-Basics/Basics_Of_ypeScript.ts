@@ -76,9 +76,9 @@ console.log(user);
 
 //using enum syntax
 enum UserPositions {
-  ADMIN,
-  READ_ONLY,
-  WRITE_ONLY,
+  ADMIN='native',
+  READ_ONLY='Ankur',
+  WRITE_ONLY=200,
   READ_WRITE,
 }
 const newUser = {

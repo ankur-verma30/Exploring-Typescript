@@ -52,10 +52,10 @@ console.log(user);
 //using enum syntax
 var UserPositions;
 (function (UserPositions) {
-    UserPositions[UserPositions["ADMIN"] = 0] = "ADMIN";
-    UserPositions[UserPositions["READ_ONLY"] = 1] = "READ_ONLY";
-    UserPositions[UserPositions["WRITE_ONLY"] = 2] = "WRITE_ONLY";
-    UserPositions[UserPositions["READ_WRITE"] = 3] = "READ_WRITE";
+    UserPositions["ADMIN"] = "native";
+    UserPositions["READ_ONLY"] = "Ankur";
+    UserPositions[UserPositions["WRITE_ONLY"] = 200] = "WRITE_ONLY";
+    UserPositions[UserPositions["READ_WRITE"] = 201] = "READ_WRITE";
 })(UserPositions || (UserPositions = {}));
 var newUser = {
     name: "Ankur Verma",
