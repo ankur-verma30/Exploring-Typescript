@@ -8,22 +8,21 @@ Enhanced Code Readability: Interfaces serve as documentation, making code easier
 Flexibility and Reusability: Interfaces can be extended and reused across different parts of your codebase.
  */
 
-interface UserNames {
+interface UserNames1 {
   // We can only declare the property, not provide any implementation or initialization
   firstName: string;
   lastName: string;
-
+//we can do these thing with type keyword also
   greetUsers(): string;
   getFullName(): string;
 }
 
 // Using the interface for an object literal
-let userName1: UserNames;
-userName1 = {
+let userName01: UserNames1 = {
   firstName: 'Ankur',
   lastName: 'Verma',
   greetUsers(): string {
-    return "Hello " + this.firstName + ' ' + this.lastName;
+    return "Hello " + this.getFullName();
   },
   getFullName(): string {
     return this.firstName + ' ' + this.lastName;
@@ -31,11 +30,11 @@ userName1 = {
 }
 
 // Class implementing the interface
-class Admin implements UserNames {
+class Admin1 implements UserNames1 {
   constructor(public firstName: string, public lastName: string) {}
 
   greetUsers(): string {
-    return "Hello " + this.firstName + ' ' + this.lastName;
+    return "Hello " + this.getFullName()
   }
 
   getFullName(): string {
@@ -44,7 +43,7 @@ class Admin implements UserNames {
 }
 
 // Another class implementing the interface
-class Member implements UserNames {
+class Member1 implements UserNames1 {
   constructor(public firstName: string, public lastName: string) {}
 
   greetUsers(): string {
@@ -57,13 +56,14 @@ class Member implements UserNames {
 }
 
 // Example usage:
-const admin = new Admin('Ankur', 'Verma');
-console.log(admin.greetUsers());
-console.log(admin.getFullName());
+//Any class which is implementing this interface we can pass its instance to user parameter
+function displayGreetMessages(user:UserNames1){
+console.log(user.greetUsers());
+  
+}
 
-const member = new Member('John', 'Doe');
-console.log(member.greetUsers());
-console.log(member.getFullName());
+const adm1=new Admin1('Ankur','Verma');
+const mem1=new Member1('Isha','Gupta');
 
-console.log(userName1.greetUsers());
-console.log(userName1.getFullName());
+displayGreetMessages(adm1);
+displayGreetMessages(mem1);

@@ -8,12 +8,11 @@ Enhanced Code Readability: Interfaces serve as documentation, making code easier
 Flexibility and Reusability: Interfaces can be extended and reused across different parts of your codebase.
  */
 // Using the interface for an object literal
-var userName1;
-userName1 = {
+var userName1 = {
     firstName: 'Ankur',
     lastName: 'Verma',
     greetUsers: function () {
-        return "Hello " + this.firstName + ' ' + this.lastName;
+        return "Hello " + this.getFullName();
     },
     getFullName: function () {
         return this.firstName + ' ' + this.lastName;
@@ -26,7 +25,7 @@ var Admin = /** @class */ (function () {
         this.lastName = lastName;
     }
     Admin.prototype.greetUsers = function () {
-        return "Hello " + this.firstName + ' ' + this.lastName;
+        return "Hello " + this.getFullName();
     };
     Admin.prototype.getFullName = function () {
         return this.firstName + ' ' + this.lastName;
@@ -48,11 +47,11 @@ var Member = /** @class */ (function () {
     return Member;
 }());
 // Example usage:
+//Any class which is implementing this interface we can pass its instance to user parameter
+function displayGreetMessage(user) {
+    console.log(user.greetUsers());
+}
 var admin = new Admin('Ankur', 'Verma');
-console.log(admin.greetUsers());
-console.log(admin.getFullName());
-var member = new Member('John', 'Doe');
-console.log(member.greetUsers());
-console.log(member.getFullName());
-console.log(userName1.greetUsers());
-console.log(userName1.getFullName());
+var member = new Member('Isha', 'Gupta');
+displayGreetMessage(admin);
+displayGreetMessage(member);
