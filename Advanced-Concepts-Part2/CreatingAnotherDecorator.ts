@@ -1,13 +1,13 @@
 
 function Template(template: string, elementId: string) {
   return function (target: any) {
-    const u = new target();
+    const userInstance = new target();
     const container = document.getElementById(elementId)!;
     if (container) {
       container.innerHTML = template;
       const h2 = container.querySelector("h2");
 
-      if (h2) h2.textContent = "Hello Mr. " + u.name;
+      if (h2) h2.textContent = "Hello Mr. " + userInstance.name;
     }
   };
 }
