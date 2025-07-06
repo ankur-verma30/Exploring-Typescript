@@ -1,0 +1,1 @@
+(()=>{"use strict";class s{constructor(s,e,n){this.name=s,this.age=e,this.gender=n}}let e=[];const n=function(){const n=new s("Ankur Verma",28,"Male");return e.push(n),n}();console.log(n),console.log(e)})();

@@ -1,0 +1,45 @@
+Why organize your code?
+
+When an application grows with a lot and lot of functionality, managing the code becomes a lot more difficult.
+
+Disadvantage:
+1: Code is less readable and maintainable
+2: Code is more error prone, and bugs can be introduced
+
+Write modular code
+
+Method 1 Manually Importing JS Files(Not Recommended)
+-------------------------------------------------------
+
+Write TypeScript code in multiple files. When we compile the TypeScript code, all the TypeScript files in the source directory will be compiled and for each of them,a JS file will be generated in the destination directory.
+
+Manually import the compiled JS files into HTML using <script> tag.
+
+<script src="user.js></script>
+<script src="task.js></script>
+<script src="app.js></script>
+
+Method 2 Using Namespaces
+--------------------------
+
+You can create a new TypeScript file where you will add a namespace. In that namespace you will define related classes, interface and functions etc. and export them.
+
+When you want to use those functions, classes etc. in other TypeScript files,then you can import the namespace in those files and use exported functions, classes etc
+
+The output JS files generated from compiling the TypeScript files are bundled together in one single file. That means,you will write code in multiple files. But in the end, you will get a single output JS file.
+
+This will allow us to import a single JS file in HTML, with a single scipt tag pointing to the bundled JS file.
+
+<scipt src="bundle.js"></scipt>
+
+Method 3 Using ES6 Module
+--------------------------
+
+We can write import and export statement in JS and hence also in TypeScript. And then, modern browsers will internally understand which JS file depends on which other file and it will be download all the dependent files and use them.
+
+In this approach, you compile all the TypeScript file to JS. But you need only one JS file import in HTML using <script> tag. This import should be link to main JS file.
+
+<script src="app.js"></script>
+
+The modern browsers already understand other JS file dependencies. That means, when a code from another dependent JS file is required to execute, modern browser will know from where to fetch them.
+

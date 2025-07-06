@@ -1,0 +1,2 @@
+Webpack is a free and open source tool which is used for bundling and minification of your JS code. By bundling files together, Webpack reduces the number of HTTP requests a browser needs to make, which can significantly imporve the loading speed of your website.
+
