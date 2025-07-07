@@ -1,0 +1,243 @@
+#01 Introduction to TypeScript
+
+🔷 What is TypeScript?
+➤TypeScript is a superset of JavaScript.
+➤It is a programming language built on JavaScript.
+➤TypeScript has all the features of JavaScript plus extra features like:
+1. interface
+2. access modifiers
+
+These features are not available in the latest version of JavaScript.
+
+🎯 Why Use TypeScript?
+➤TypeScript makes writing JavaScript easier, cleaner, less error-prone.
+➤You can write simple code in TypeScript which compiles to complex JavaScript logic.
+➤Helps avoid bugs and identity
+
+⚠️ Limitation of TypeScript
+➤TypeScript code cannot be executed directly by JavaScript runtimes like:
+1. Browser
+2. Node.js
+
+⚙️ How TypeScript Works
+➤TypeScript is also a tool — a powerful compiler.
+➤It compiles TypeScript code into JavaScript code.
+➤Then this JavaScript code can be run by:
+1. Browser
+2. Node.js
+
+➤We don’t write JavaScript directly when using TypeScript.
+➤We write TypeScript, then compile it to JavaScript.
+
+🤔 How can TS use new features if JS doesn’t support them?
+➤The TypeScript compiler uses workarounds in JavaScript.
+➤TS features are compiled into equivalent JavaScript using:
+1. Existing JavaScript features
+2. More complex JS code
+➤There's no magic
+➤You write simple code in TypeScript -> gets converted into complex JS code.
+
+TypeScript is strongly typed, whereas Javascript is dynamically typed.
+
+
+📘 TypeScript Installation & Setup
+
+🔹 Compile TypeScript Code
+Open terminal in the project folder.
+
+Run the compiler: tsc app.ts
+This generates app.js.
+
+📘 TypeScript – Variables
+➤A variable is a named storage where we can store a value.
+
+🔹 Creating Variables in TypeScript
+Variables can be created using let or const keywords.
+
+let num=100;
+const str="hello world";
+
+🔹 let vs const
+| Feature                 | `let`                      | `const`                               |
+| ----------------------- | -------------------------- | ------------------------------------- |
+| Initialization Required | ❌ Not required immediately | ✅ Must be initialized immediately     |
+| Can Reassign Value      | ✅ Yes                      | ❌ No, value cannot be changed         |
+| Example (Valid)         | `let x; x = 10;`           | `const y = 5;`                        |
+| Example (Invalid)       | –                          | `const y;` (❌ Error: must initialize) |
+
+🔹 Type Inference in TypeScript
+TypeScript automatically infers the type at the time of initialization.
+
+Example:
+let num=100; //inferred as number
+
+Once the type is set, it cannot be changed.
+num=true // ❌ Error: boolean not assignable to number
+
+🔹 Rules for Naming Variables
+1. Allowed characters- Letters, digits, _(underscore), {dollar sign}
+2. Cannot start with a digit.
+3. Valid start characters: A letter, _, $
+4. Case Sensitive
+5. Reserved Keywords not Allowed
+
+📘 Datatypes in TypeScript
+
+Note: 
+➤With Backticks we can write multi line string, not possible normally also allows expression interpolation.
+➤TypeScript numbers are always floating point numbers even if we don't see or write it.
+
+Common Data TypeScript
+string: Textual data or a sequence of characters.
+
+number: All numeric values(both integers and float).
+boolean: true or false
+
+0, null, undefined is a falsy values.
+
+📘 Explicit Typing & Type Inference
+
+1. Explicit Typing: You can explicitly specify data types for:
+➤ Function parameters
+➤ Variables
+➤ Function return value(optional)
+
+function sum(num1:number,num2:number):number{
+    return num1+num2;
+}
+If non-number values are passed, TypeScript gives a compile-time error.
+
+🔹 2. Without Explicit Types
+If no type is specified, any type can be passed, which can lead to unexpected results.
+
+function sum(num1,num2){
+    return num1+num2;
+}
+
+sum("12",13); //Output: "1213" (string concatenation!)
+
+🔹 3. Explicit Types for Variables
+let n1:number=10;
+let msg:string= "Result is"
+
+🔹 4. Type Inference
+TypeScript automatically infers the type of a variable when you assign a value during declaration.
+
+let n1=10; //inferred as number
+let name= "Ankur" //inferred as string
+
+After inference, the type cannot be changed
+n1= "Hello" //❌ Error: string not assignable to number
+
+🔹 5. Type Inference in Functions
+If you define parameters without types, any value can be passed (not recommended).
+➤ Always use explicit typing in function parameters for safety.
+
+🔹 6. Comparison with JavaScript
+| Feature              | JavaScript          | TypeScript               |
+| -------------------- | ------------------- | ------------------------ |
+| Typing               | Dynamic             | Static (strong typing)   |
+| Type Errors          | Detected at runtime | Detected at compile time |
+| Variable Type Change | Allowed             | Not Allowed              |
+
+📘 Objects in TypeScript
+
+🔹 1. Creating Objects in TypeScript
+
+let person={
+    name:"John",
+    age:30
+};
+Just like JavaScript- Key value pairs
+
+🔹 2. Type Inference for Objects
+➤TypeScript infers the structure of the object at initialization.
+➤If you reassign an object with extra or missing properties, it throws an error.
+
+person={
+    name:"Mark",
+    age:32,
+    gender:"male" //❌ Error: gender is not expected
+};
+
+🔹 3. Explicit Object Typing
+let person: {name:string,age:number}={
+    name:'John",
+    age:30
+}
+Only objects matching this structure can be assigned.
+
+🔹 4. Assigning object as a Type (Generic)
+let person: object;
+
+Accepts any object, but accessing specific properties will give error(TypeScript doesn’t know what properties exist).
+
+🔹 5. Accessing Properties
+console.log(person.name); // if name exist
+console.log(person["age"]); // square bracket notation
+
+🔹 6. Nested Object Typing
+let person:{
+    name:string;
+    age:number;
+    address:{
+        city: string;
+        country: string;
+    }
+}={
+    name:"John",
+    age:30,
+    address:{
+        city:"London",
+        country:"UK"
+    }
+};
+
+🔹 7. JavaScript vs TypeScript
+| Feature                | JavaScript      | TypeScript           |
+| ---------------------- | --------------- | -------------------- |
+| Type Safety            | ❌ No            | ✅ Yes                |
+| Extra Property Check   | ❌ Allowed       | ✅ Error              |
+| Property Inference     | ❌ Not available | ✅ Strong inference   |
+| Accessing Missing Keys | `undefined`     | ❌ Compile-time error |
+
+📘 Objects in TypeScript
+➤Just like JavaScript, an array is a collection of values.
+➤Syntax to create an array is the same [], but TypeScript adds type safety.
+
+🔹 1. Type Inference in Arrays
+let person=["John",28,"male",1000];
+
+TypeScript infers: (string | number)[] -> An array of string or number.
+
+🔹 2. Restriction Based on Inferred Type
+person.push(true);// ❌ Error: boolean not allowed
+person.push(500);// number allowed
+
+🔹 3. Arrays with Single Type
+let names= ["Alice", "Bob"] // string[]
+Push any value not matching the type -> ❌ Error
+
+🔹 4. Explicitly Typing Arrays
+let names: string[] = [];           // only strings allowed
+names.push("John");                 // ✅ OK
+names.push(42);                     // ❌ Error
+
+//Use | (pipe) operator for multiple allowed types:
+let person: (string | number)[] = ["John", 28]; // ✅
+person.push(true); // ❌ Error if boolean not included
+
+Accessing of elements we use traditional indexing method
+
+Use for...of loop:
+for(let year of birthYears){
+    console.log(year);
+}
+
+📌 Key Differences from JavaScript
+| Feature                   | JavaScript       | TypeScript           |
+| ------------------------- | ---------------- | -------------------- |
+| Type Safety               | ❌ No             | ✅ Yes                |
+| Invalid Type Insertion    | Allowed          | ❌ Compile-time error |
+| Explicit Type Declaration | ❌ Not applicable | ✅ Supported          |
+| Code Autocompletion       | Limited          | ✅ Strong support     |
