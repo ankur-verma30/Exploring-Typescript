@@ -1,6 +1,8 @@
 #01 Introduction to TypeScript
 
 🔷 What is TypeScript?
+##########################
+
 ➤TypeScript is a superset of JavaScript.
 ➤It is a programming language built on JavaScript.
 ➤TypeScript has all the features of JavaScript plus extra features like:
@@ -41,6 +43,7 @@ TypeScript is strongly typed, whereas Javascript is dynamically typed.
 
 
 📘 TypeScript Installation & Setup
+####################################
 
 🔹 Compile TypeScript Code
 Open terminal in the project folder.
@@ -49,6 +52,7 @@ Run the compiler: tsc app.ts
 This generates app.js.
 
 📘 TypeScript – Variables
+##########################
 ➤A variable is a named storage where we can store a value.
 
 🔹 Creating Variables in TypeScript
@@ -66,6 +70,7 @@ const str="hello world";
 | Example (Invalid)       | –                          | `const y;` (❌ Error: must initialize) |
 
 🔹 Type Inference in TypeScript
+################################
 TypeScript automatically infers the type at the time of initialization.
 
 Example:
@@ -82,6 +87,7 @@ num=true // ❌ Error: boolean not assignable to number
 5. Reserved Keywords not Allowed
 
 📘 Datatypes in TypeScript
+############################
 
 Note: 
 ➤With Backticks we can write multi line string, not possible normally also allows expression interpolation.
@@ -141,6 +147,7 @@ If you define parameters without types, any value can be passed (not recommended
 | Variable Type Change | Allowed             | Not Allowed              |
 
 📘 Objects in TypeScript
+##########################
 
 🔹 1. Creating Objects in TypeScript
 
@@ -201,7 +208,8 @@ let person:{
 | Property Inference     | ❌ Not available | ✅ Strong inference   |
 | Accessing Missing Keys | `undefined`     | ❌ Compile-time error |
 
-📘 Objects in TypeScript
+📘 Arrays in TypeScript
+##########################
 ➤Just like JavaScript, an array is a collection of values.
 ➤Syntax to create an array is the same [], but TypeScript adds type safety.
 
@@ -241,3 +249,320 @@ for(let year of birthYears){
 | Invalid Type Insertion    | Allowed          | ❌ Compile-time error |
 | Explicit Type Declaration | ❌ Not applicable | ✅ Supported          |
 | Code Autocompletion       | Limited          | ✅ Strong support     |
+
+🔷 What is a Tuple in TypeScript?
+###################################
+➤A Tuple is a fixed length, ordered collection of elements.
+➤Each position in the tuple has a specific data type.
+➤Not available in JavaScript, but compiled to an array in JS.
+
+let employee:[number,string,number,boolean];
+employee=[1123,"John", 2000,true];
+➤We cannot add 5th element but there is an exception
+
+❗ Exception: Push Method
+Even though tuples are fixed-length, you can still push values to them without error:
+
+employee.push(100): //✅No compiler error
+This is a TypeScript limitation, not enforced at runtime or by push.
+
+❌ Common Errors
+➤Assigning more/fewer values than defined:
+
+employee = [1, "Mark", 1200];     // ❌ Error: needs 4 elements
+employee = [1, "Mark", 1200, true, 100]; // ❌ Error: too many elements
+
+➤Assigning wrong types:
+
+employee = ["one", "John", 2000, true]; // ❌ Error: "one" is not a number
+
+🚫 Why Not Use Tuples for Random, Long, Mixed Data?
+Because:
+➤Tuples are meant for structure (e.g., [id, name, active])
+➤Not meant for arbitrary or unpredictable values
+
+Tuples can be reassinged when it have same type of elements in the ordered manner in fixed defined length.
+
+🔶 TypeScript enum
+######################
+
+➤A special data type used to define a set of named constants.
+➤Not available in plain JavaScript, only in TypeScript.
+➤Used for cleaner, more readable code especially when dealing with fixed categories(e.g. user roles,states);
+
+enum Roles{
+    Admin,
+    ReadOnly,
+    WriteOnly,
+    ReadWrite
+}
+By default 
+➤Admin=0, ReadOnly=1,WriteOnly=2,ReadWrite=3
+
+🧩 Usage Example
+let user={
+    name:"Ankur",
+    age:30,
+    role:Roles.Admin
+};
+
+if(user.role==Roles.Admin){
+    console.log("This user is Admin");
+}
+
+✍️ Explicit Value Assignment
+Numeric:
+enum Roles {
+  Admin = 100,
+  ReadOnly = 200,
+  WriteOnly = 300,
+  ReadWrite         // → 301 (auto-increment from previous)
+}
+
+String:
+
+enum Roles {
+  Admin = "ADMIN",
+  ReadOnly = "READ_ONLY"
+}
+
+Mixed (⚠ Not recommended):
+
+enum Roles {
+  Admin = "ADMIN",
+  ReadOnly = 2
+}
+
+Note:Can be mixed with string and number but initialization should end wiht number only
+
+🌀 Compilation to JavaScript
+➤TypeScript compiles enums to IIFE functions to generate bi-directional mappings.
+
+✅ When to Use Enum
+➤When you need fixed categories (roles, permissions, statuses).
+➤To avoid hardcoded strings or magic numbers in your logic.
+➤When you want autocompletion + type safety.
+
+🚫 Caution
+➤Enums are not available in JS- they're a TypeScript-only feature.
+Use const enum for performance(inlines the values), but it doesn't support reverse mapping.
+
+🔶 TypeScript any Type
+#########################
+
+➤any is the most flexible type in TypeScript.
+➤A variable declared as any can hold any kind of value:number, string, boolean, array, object ect.
+➤Disables type checking, like JavaScript.
+
+let data: any;
+
+data = 42;          // ✅ No error
+data = "hello";     // ✅ No error
+data = true;        // ✅ No error
+data = [1, 2, 3];   // ✅ No error
+data = { a: 1 };    // ✅ No error
+
+📚 any[] — Array of Any
+let arr: any[] = [1, "two", true, null, undefined];
+
+⚠️ Why to Avoid any
+➤Removes all the benifits of TypeScript.
+➤Turns TypeScript code into JavaScript-like untyped code.
+➤May lead to runtime bugs since type saftey is lost.
+
+✅ Use Case
+➤When you don't know the type in advance(e.g. external libraries, user inputs, JSON, parsing).
+➤Type is dynamic or varies at runtime.
+
+🕵️ Variable with No Type or Value
+let test;  // No value, no type
+console.log(typeof test);  // "undefined"
+console.log(test);         // undefined
+
+➤TypeScript infers test as any if used without initialization.
+➤Both type and value will be undefined.
+
+🟣 TypeScript: Union Types
+############################
+➤A Union Type allows a variable, parameter or return type to hold more than one type.
+
+let data: string|number; ( | ) know as pipe operator
+Here data can hold either a string or a number.
+
+✅ Example 1: Union in Variables
+let user:{name:string,age:number} | null;
+
+✅ Example 2: Union in Function Parameters
+function printStatus(message:string,code:string|number){
+    if(typeof code==="string"){ //here typeof is a type guard
+        code =code.trim(); //✅Safe: Only used if code is string
+    }
+    console.log(`${message}- Status Code: ${code}`);
+}
+➤To access type-specific methods, you need type guards (typeof, instanceof, etc.).
+
+printStatus("Success",200);
+printStatus("Not found","404");
+
+❗Common Pitfall
+➤Trying to call methods that only exist on one of the types:
+code.trim(); // ❌ Error: 'trim' might not exist on type 'number'
+
+✔️ Fix:
+Use a type check:
+
+if (typeof code === "string") {
+  code = code.trim();
+}
+
+✅ When to Use Union Types
+➤When you expect multiple possible input types.
+➤When a variable can be nullable.
+➤For flexibility with controlled safety (better than any).
+
+🟡 TypeScript: Literal Types
+##############################
+
+A literal type allows you to restrict a variable to a specific value, not just a general type.
+
+➤Unlike string,which accepts any string value, a literal type like "admin" only accepts that exact value
+
+✅ Example 1: Literal Type in a Constant
+const status="hello world";
+
+➤TypeScript infers:
+status:"hello world"(Literal Type)
+➤Not just string -- it's exactly "hello world".
+
+🆚 Difference Between const and let
+
+const msg = "hi";       // msg: "hi" (literal)
+let msg2 = "hi";        // msg2: string
+
+✅ Example 2: Literal Types in Function Parameters
+function roleMessage(role:"admin" | "read" | "read-write"){
+    switch(role){
+        case "admin":
+        console.log("You have admin permissions");
+        break;
+        case "read":
+        console.log("You have read permissions");
+        break;
+        case "read-write":
+        console.log("You have read-write permissions");
+        break;
+        default:
+        console.log("Unknown role");
+    }
+}
+
+roleMessage("admin");         // ✅ allowed
+roleMessage("read-write");    // ✅ allowed
+roleMessage("guest");         // ❌ error at compile time
+
+🔁 Literal Types Can Be:
+Strings: "start" | "stop"
+Numbers: 1 | 2 | 3
+Booleans: true | false
+Null / Undefined: null | undefined
+
+⚠️ Why Use Literal Types?
+➤Adds strict control over allowed values.
+➤Prevents invalid inputs at compile time.
+➤Helps in writing safe and predictable code (especially with switch, API requests, enums, etc.).
+
+🟡 TypeScript: Type Alias
+##########################
+
+➤A Type Alias allows you to give a custom name to a type(primitive, union, literal, object etc).
+➤It helps in writing clean, reusable, and maintainable code by avoiding type repition.
+
+✅ Syntax
+type CustomTypeName = existingType;
+
+✅ Example 1: Alias for a Primitive Type
+
+type StringType=string;
+let message:StringType="Hello World!";
+StringType is now a custom alias for string.
+
+✅ Example 2: Alias for a Union Type
+type StringOrNumber= string | number;
+
+function printCode(code: StringOrNumber) {
+  console.log(code);
+}
+➤Instead of repeating string | number, you can use the alias StringOrNumber.
+
+✅ Example 3: Alias for an Object Type
+type User={
+    firstName:string;
+    lastName:string;
+    age:number;
+};
+
+function getFullName(user:User):string{
+    return `${user.firstName} ${user.lastName}`;
+}
+
+🧠 Bonus Tip:
+You can even alias complex types like:
+
+type UserList = User[];
+type Callback = (value: number) => void;
+
+🟡 TypeScript: Function Return Types
+#####################################
+
+➤The return type of a function indicates the type of value that function will return.
+➤You can either:
+Let TypeScript infer the return type automatically.
+Explicitly define the return type using :type Syntax
+
+✅ Syntax
+
+function functionName(params): returnType {
+  // logic
+  return value;
+}
+
+🔹 Examples
+
+1️⃣ Function That Returns a Value
+
+function add(num1:number,num2:number):number{
+    return num1+num2;
+}
+➤Return type is explicitly declared as numbers
+➤TypeScript can also infer this if return type is not specified.
+
+2️⃣ Incorrect Return Type
+
+function add(num1: number, num2: number): string {
+  return num1 + num2; // ❌ Error: number is not assignable to string
+}
+
+3️⃣ Return Type Inferred as string
+
+function add(num1: number, num2: number) {
+  return (num1 + num2).toString();
+}
+
+4️⃣ Function That Returns Nothing
+
+function add(num1: number, num2: number): void {
+  console.log(num1 + num2);
+}
+➤void means that function doesn't return anything.
+➤Even if you use return; without a value, it is still void.
+
+5️⃣ Return Type as undefined (Not Recommended)
+
+function add(num1: number, num2: number): undefined {
+  console.log(num1 + num2);
+  return undefined;
+}
+Works, but not recommended.
+✅ Prefer void over undefined for clarity and convention.
+
+➤If no return statment is used, TypeScript infers return type as void.
