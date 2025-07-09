@@ -566,3 +566,251 @@ Works, but not recommended.
 ✅ Prefer void over undefined for clarity and convention.
 
 ➤If no return statment is used, TypeScript infers return type as void.
+
+🟣 TypeScript: Function Types as Variable Types
+################################################
+
+🧠 What You Already Know
+➤We can add types to function parameters and return types.
+➤We can assign a function to a variable in Javascript.
+
+🔸 Example: Assigning Function to Variable
+function greeUser(user:{name:string}){
+  console.log(`Hello ${user.name}`)
+}
+
+let greet=greeUser; // ✅ Valid
+✅ We can now call greet({name:"John"}) and it will behave like greeUser. 
+
+❗ Problem with any Type
+If no type is defined for greet, its type is inferred as any:
+
+let greet:any=greeUser;
+greet=100; // ❌ Allowed, but dangerous!
+
+➤Can accidentally assign non-function values (like 100, true, "text") to greet.
+➤This cause runtime errors (e.g. greet is not a function) without compile-time warning.
+
+✅ Solution 1: Use General Function Type
+let greet:Function =greeUser;
+greet=100; // ❌ Error at compile time
+
+➤Function restricts assignment to function values only.
+➤❌ But it doesn’t check the parameter or return types of the function.
+
+✅✅ Solution 2: Use Specific Function Signature
+➤Specify the exact structure (Signature) of the function:
+
+let greet:(user:{name:string})=>void;
+
+Now only function that:
+➤Accepts a single user object with a name Property
+➤Return void
+➤...can be assigned to greet
+
+🔍 Detailed Example
+type User = { name: string; age: number };
+
+function greetUser(user: User): void {
+  console.log(`Hello ${user.name}`);
+}
+
+function isEligible(user: User): void {
+  console.log(user.age >= 18);
+}
+
+function sum(a: number, b: number): number {
+  return a + b;
+}
+
+// Declare variable with specific function signature
+let greet: (user: User) => void;
+
+greet = greetUser;   // ✅
+greet = isEligible;  // ✅
+greet = sum;         // ❌ Error - Signature mismatch
+
+🟦 TypeScript: Function Types for Variables & Callbacks
+###########################################################
+
+We can assign a function to a variable, and define the expected function signature using function types.
+
+let addNumbers:(a:number,b:number) => number;
+
+function sum(x:number,y:number):number{
+  return x+y;
+}
+
+addNumbers=sum; // ✅ Matches signature
+
+🔁 Callback Functions with Function Types
+We can also define function types as parameter types (for callback functions).
+
+✅ Example: Defining a Function with a Callback
+function getResult(num1:number,num2:number,print:(msg:string,result:number) =>void):void {
+  const result=num1+num2;
+  print("Sum =",result);
+} 
+
+📘 Callback Function Example
+function display(message:string,result:number):void{
+  console.log(`${message}${result}`);
+}
+
+🔄 Calling with Callback
+getResult(12,13,display); // Output: Sum = 25
+
+⚠️ What If We Pass Invalid Types?
+If the callback parameter is not a function or does not match the signature, TypeScript shows compile-time errors
+
+📌 Why Use Function Types for Callbacks?
+➤Prevents bugs during runtime.
+➤Ensures correct usage of callbacks.
+➤Helps with IntelliSense and auto-completion.
+➤Makes function contracts clear and safe.
+
+✅ Best Practice
+Always define callback function types explicitly when:
+➤Passing a function as an argument
+➤Returning a function from another function
+➤Storing a function in a variable
+
+🔹 TypeScript unknown Type
+###########################
+
+🧠 What Is unknown?
+➤unknown is a type-safe counterpart of any.
+➤It is used when you don't yet know what type of data a variable can hold.
+➤Unlike any, it forces you to do a type check before using the variable.
+
+✅ unknown vs any
+| Feature                        | `any`          | `unknown`  |
+| ------------------------------ | -------------- | ---------- |
+| Can hold any value             | ✅ Yes          | ✅ Yes      |
+| Type checking before usage     | ❌ Not required | ✅ Required |
+| Type-safe                      | ❌ No           | ✅ Yes      |
+| Suitable when type is unknown? | ⚠️ Not ideal   | ✅ Ideal    |
+
+💡 Use Case
+let inputVal:unknown;
+inputVal = 123;         // valid
+inputVal = "hello";     // valid
+inputVal = [1, 2, 3];   // valid
+✅ All types can be assigned to unknown.
+
+let uname:string;
+uname=inputVal; // ❌ Error: Type 'unknown' is not assignable to type 'string'
+
+We must narrow the type:
+if(typeof inputVal==="string") uname=inputVal;
+
+🚫 Why Not Use any?
+Using any disables all type safety:
+let inputVal:any;
+let uname:string=inputVal; // ✅ No error, but could lead to runtime bugs
+
+Whereas unknown prevents unsafe assignment unless you explicit verify the type.
+
+🧪 Real-Life Scenario
+You get data from an API reponse or user input and aren't sure of its type at first:
+
+function handleInput(data:unknown){
+  if(typeof data==="number"){
+    console.log("Square:",data*data);
+  }
+  else{
+    console.log("Invalid number input); 
+  }
+}
+
+🔥 TypeScript never Type
+#########################
+
+🚫 What Is never?
+➤The never type represents a value that never occurs.
+➤A function with return type (never) never completes normally:
+It either throw an error.
+Or it runs forever (like an infinite loop).
+
+It’s more strict than void — not even undefined is returned.
+
+✅ When to Use never
+You use never when a function
+1. Always thows an error
+2. Never finishes executing (infinite loop)
+
+🔁 never vs void
+| Feature                  | `void`                              | `never`                                              |
+| ------------------------ | ----------------------------------- | ---------------------------------------------------- |
+| Used for functions that: | Finish but return nothing           | Never finish or always throw                         |
+| Returns value?           | ❌ No value, but returns `undefined` | ❌ No return at all — not even `undefined`            |
+| Logged output            | Logs `undefined`                    | Logs nothing (because function crashes or loops) |
+
+🧪 Examples
+✅ 1. Error-Throwing Utility Functions
+Imagine a utility function that always throws an error when something goes wrong — this is a perfect case for never:
+
+function throwError(message: string): never {
+  throw new Error(message);
+}
+✅ Real-Life Scenario:
+In an API or validation library:
+
+function validateUser(data: any) {
+  if (!data.email) {
+    throwError("Email is required"); // return type: never
+  }
+}
+Here, throwError() stops the execution and will never return.
+
+❌ No value is ever returned — just throws.
+
+2. Function with infinite loop → never
+function runForever():never{
+  while(true){
+    console.log("Running...")
+  }
+}
+🚫 Never exits → return type is never.
+console.log(runForever());           // keeps running, no output after
+
+✅ 2. Exhaustive Type Checking (with never)
+When you use discriminated unions, never helps ensure that all cases are handled — very common in Redux, state machines, or switch cases.
+
+🔄 Example: Handling shape types
+
+type Shape = 
+ { type: "circle"; radius: number } | { type: "square"; side: number };
+
+function getArea(shape: Shape): number {
+  switch (shape.type) {
+    case "circle":
+      return Math.PI * shape.radius * shape.radius;
+    case "square":
+      return shape.side * shape.side;
+    default:
+      const _exhaustiveCheck: never = shape; // ❌ Error if new shape type is added but not handled
+      throw new Error("Unhandled shape type");
+  }
+}
+✅ Real-Life Scenario:
+In large applications, this pattern ensures that all variants of a type are covered. If a new shape is added (like "triangle"), TypeScript will force you to handle it.
+
+✅ 3. Unreachable Code Detection
+In deeply nested logic or switch cases, never can help identify unreachable code:
+
+function process(value: string | number) {
+  if (typeof value === "string") {
+    console.log("string value:", value);
+  } else if (typeof value === "number") {
+    console.log("number value:", value);
+  } else {
+    const unreachable: never = value; // Will throw error: Type 'string | number' is not assignable to 'never'
+  }
+}
+
+⚠️ Default Behavior
+If you don’t write the return type:
+➤Functions that throw or loop forever will not be automatically inferred as never.
+➤You'll have to explicitly set it to never.
+

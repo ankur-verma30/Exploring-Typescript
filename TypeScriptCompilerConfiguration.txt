@@ -1,0 +1,157 @@
+🔧 Why We Need TypeScript Configuration?
+
+In small projects:
+We manually compile .ts files using: tsc app.ts
+
+In large projects:
+➤There are many .ts files.
+➤Recompiling them manually every time is inefficient.
+➤We need automation and batch compilation.
+
+✅ Watch Mode (Auto-Compile on Save)
+🔹 Problem:
+You had to run: tsc app.ts
+every time you made a change.
+
+🔹 Solution:
+Use watch mode: tsc app.ts --watch
+
+Or shorthand: tsc app.ts -w
+Now TypeScript will automatically recompile app.ts whenever it's saved.
+🧠 Note: This only watches one file at a time.
+
+🧠 Real-World Problem: Multiple Files
+Let’s say your project grows:
+
+app.ts
+config.ts
+auth.ts
+
+You don't want to run:
+
+tsc app.ts
+tsc config.ts
+tsc auth.ts
+every time.
+
+💡 tsconfig.json: TypeScript Project Setup
+To compile all TS files in the project, initialize TypeScript with:
+
+tsc --init
+This creates a tsconfig.json file in your project, which tells the compiler:
+Which files to include
+
+➤Compilation options (e.g., target, module, strict)
+➤Output directory
+➤Much more...
+
+✅ Compile All Files Automatically
+Now, with tsconfig.json present, just run: tsc
+And it will compile all .ts files in the project.
+
+To compile all .ts files and recompile on changes: tsc -w
+Now you only need to:
+Save the .ts files
+Let TypeScript handle compilation
+
+📂 Example Folder Setup
+pgsql
+Copy code
+project/
+├── app.ts
+├── auth.ts
+├── config.ts
+├── index.html
+├── tsconfig.json   👈 created by `tsc --init`
+
+🔧 Key Properties in tsconfig.json
+1. compilerOptions
+This section controls how your TypeScript is compiled.
+
+➡️ Covered in later lectures (e.g., target, module, strict, outDir).
+
+2. exclude
+This tells the compiler what not to compile.
+
+✅ Syntax:
+
+"exclude": ["config.ts", "node_modules"]
+Accepts an array of file/folder paths.
+
+Supports wildcards:
+
+"exclude": ["*.dev.ts", "**/*.test.ts"]
+
+🔥 Common Use:
+Exclude node_modules (usually done automatically unless exclude is used).
+
+3. include
+This tells the compiler what files/folders to explicitly compile.
+
+✅ Syntax:
+
+"include": ["app.ts", "config.ts"]
+Or to include a folder:
+
+"include": ["src"]
+If you specify include, only those files/folders will be compiled
+
+4. files
+Used to list specific files to compile (not folders).
+
+✅ Syntax:
+"files": ["app.ts", "config.ts"]
+🚫 Cannot be used with folder paths like "src/"
+
+📌 Difference between include and files:
+| Feature                       | `include` | `files` |
+| ----------------------------- | --------- | ------- |
+| Accepts folders               | ✅         | ❌       |
+| Supports patterns (wildcards) | ✅         | ❌       |
+| Better for large projects     | ✅         | ❌       |
+| Good for tiny projects        | ❌         | ✅       |
+
+
+Example tsconfig.json:
+
+{
+  "compilerOptions": {
+    "target": "es6"
+  },
+  "exclude": ["node_modules", "src/test.ts"],
+  "include": ["src", "app.ts"]
+}
+
+⚠️ Important Notes
+➤If you don’t use exclude, node_modules is excluded by default.
+➤If you do use exclude, you must explicitly exclude node_modules.
+➤You can use include and exclude together for fine control.
+➤files is rarely used in real-world large projects—include is preferred.
+
+🎯 What is the target Option in TypeScript?
+➤target defines the ECMAScript version of JavaScript that TypeScript should compile to.
+➤It controls the syntax and features in the output JavaScript.
+➤Set inside the compilerOptions of your tsconfig.json.
+
+📁 Where Is It Set?
+In tsconfig.json:
+
+{
+  "compilerOptions": {
+    "target": "es5"
+  }
+}
+
+✅ Common Values for target
+| Value          | Description                     | Supports `let`, `const`, arrow functions? |
+| -------------- | ------------------------------- | ----------------------------------------- |
+| `es3`          | Very old JS version             | ❌                                         |
+| `es5`          | Supports older browsers         | ❌                                         |
+| `es6`/`es2015` | Modern JS version               | ✅                                         |
+| `es2016`+      | Newer JS versions               | ✅                                         |
+| `esnext`       | Latest features (not finalized) | ✅                                         |
+
+⚠️ Important Notes
+➤Older browsers don’t understand modern JS features.
+➤Setting target ensures your compiled code matches the runtime environment of your users.
+➤If you use newer JS features but target old JS (like es5), TypeScript will downlevel compile (transform) your code.
