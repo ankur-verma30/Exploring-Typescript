@@ -155,3 +155,182 @@ In tsconfig.json:
 ➤Older browsers don’t understand modern JS features.
 ➤Setting target ensures your compiled code matches the runtime environment of your users.
 ➤If you use newer JS features but target old JS (like es5), TypeScript will downlevel compile (transform) your code.
+
+📚 What is the lib Option in TypeScript?
+##########################################
+
+The lib option in tsconfig.json specifies which built-in JavaScript APIs and environment types should be available in your TypeScript project.
+
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "lib": ["es2016", "dom", "dom.iterable", "scripthost"]
+  }
+}
+
+🧠 Why Use lib?
+➤Typescript needs typed definitions to understand built-in objects like Map, Set, document, console, etc.
+➤The lib options tells TypeScript which type definitions to include:
+1. If you are building for browsers, you will need DOM types.
+2. If you are building for Node.js, you may not need DOM types.
+
+✅ Default Behavior (When lib is Commented or Not Specified)
+➤If you don't specifiy lib option:
+It include:
+1. The appropriate ECMAScript library (based on target)
+2. "dom", "dom-iterable", and "scripthost"
+
+Example: With target: "es2016" and no lib, TypeScript includes:
+"lib": ["es2016", "dom", "dom.iterable", "scripthost"]
+
+❌ What Happens When You Uncomment lib But Leave It Empty?
+
+lib:[]
+
+➤No libraries are included.
+➤TypeScript won't recognize:
+➤document, window, console, etc.
+➤Modern JS features like Map, Set, etc.
+➤You’ll get errors even for common APIs.
+
+📌 How to Fix That?
+Specify what you need:
+
+lib:["es2016","dom"]
+➤es2016 adds features like Map, Set, includes(), etc.
+➤dom enables DOM APIs like document.getElementById, addEventListener
+
+📘 1. allowJs
+
+Allows TypeScript to include .js (JavaScript) files in the compilation process.
+
+✅ When to Use:
+➤You're using both JavaScript and TypeScript in the same project.
+➤You’re migrating a JS project to TS gradually.
+
+➤If allowJs is true, TypeScript will also compile exisiting .js files.
+➤If your .js files are already generated from .ts files, this may result in duplicate compilation(not recommended).
+
+📘 2. checkJs
+Enables type-checking and error reporting in JavaScript files.
+
+✅ When to Use:
+You want TypeScript to analyze your .js files for potential errors, even if you don’t convert them to .ts.
+
+📘 3. sourceMap
+Genrates .js.map files to allow debugging of TypeScript code directly in the browser's developer tools.
+
+✅ When to Use:
+You want to debug TypeScript files instead of compiled JavaScript in DevTools.
+
+🛠️ How It Works:
+➤TypeScript generates .js.map files (e.g., app.js.map).
+➤Modern browsers use these .map files to show your original .ts files in DevTools.
+➤You can set breakpoints and debug in .ts files instead of .js.
+
+🔷 1. rootDir – Where TypeScript files live
+Specifies the root folder where TypeScript should look for source files during compilation.
+
+🧠 Default Behavior:
+By default TypeScript assumes the root of the project is the rootDir.
+If you move your .ts files into a src/ folder, you should explicitly set:
+
+"rootDir": "./src"
+
+🔍 Why It’s Useful:
+➤Helps organize your code by separating source files (src/) from other files like configs, build output, etc.
+➤Prevents TypeScript from compiling unintended files outside the intended directory.
+
+src/
+ ├─ app.ts
+ ├─ config.ts
+ └─ utils.ts
+ "rootDir": "./src"
+
+ Now TypeScript will only look inside src/ for .ts files to compile.
+
+ 🔷 2. outDir – Where JS output goes
+ Specifies the output directory where compiled JavaScript files will be placed.
+
+ 🧠 Default Behavior:
+ If not set, JS files are generated in the same folder as .ts files(messy).
+
+ 💡 Recommended:
+Use a dist/ or build/ folder for clean separation:
+
+"outDir":"./dist"
+
+🗂️ Folder Structure Maintained:
+If your source looks like:
+
+src/
+ ├─ app.ts
+ └─ config/
+     └─ config.ts
+
+Then output will be:
+dist/
+ ├─ app.js
+ └─ config/
+     └─ config.js
+
+🔗 Using rootDir + outDir Together
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist"
+  },
+  "include": ["src"]
+}
+
+🧼 Bonus Tip – include Option:
+include:["src"]
+Use it to restrict compilation only to files inside src/, even if tohers exits elsewhere.
+
+🔷 1. noEmit
+Prevents JavaScript file generation during compilation.
+
+📌 Use Case:
+You want to check for TypeScript errors without generating .js files- ideal for linting for CI builds.
+Even after compiling with tsc, no .js files will be created.
+
+🔷 2. noEmitOnError
+Stop .js file genration if any .ts files contains errors.
+
+💡 Use Case:
+Prevents invalid JavaScript from being created from buggy TypeScript.
+
+🔷 3. removeComments
+Remove all comments from the generated JavaScript files.
+
+💡 Use Case:
+Helpful in production builds to reduce file size and hide implementation notes or docs.
+
+🔒 Type Checking Compiler Options in tsconfig.json
+✅ Top-Level Strict Flag
+🔷 "strict": true
+Purpose: Enables all strict type-checking options at once.
+
+Default Behavior: Enables all the below flags:
+📌 Individual Type-Checking Flags (Used when strict: false)
+➤noImplicitAny: Prevents variables and parameters from being implicitly assigned the any type.
+
+➤strictNullChecks: Prevents the assignment of null or undefined to a variable unless explicitly allowed.
+
+➤strictBindCallApply: Ensures correct usage of bind, call, and apply with expected argument types.
+
+➤alwaysStrict: Emits "use strict" in all output .js files.
+
+➤and others like strictFunctionTypes, strictPropertyInitialization, etc.
+
+Use Case: Recommended for production-ready apps to catch more errors early
+
+✅ TypeScript Compiler Options for Code Quality (tsconfig.json)
+These options help you catch potential issues early and write cleaner, maintainable code.
+
+1. 🔷 "noUnusedLocals": true : Prevents declaration of unused local variables.
+
+2. 🔷 "noUnusedParameters": true : Flags function parameters that are never used
+Fix: Either remove the parameter or use it in the function.
+
+3. 🔷 "noImplicitReturns": true : Ensures all code paths in a function return a value.
