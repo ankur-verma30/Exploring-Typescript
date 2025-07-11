@@ -814,3 +814,151 @@ If you don’t write the return type:
 ➤Functions that throw or loop forever will not be automatically inferred as never.
 ➤You'll have to explicitly set it to never.
 
+🔶 What is Array Destructuring?
+#################################
+
+Array Destructuring is an ES6 feature that allows unpacking values from arrays  into individual Variables using a clean, concise syntax.
+
+✅ Traditional Way (Without Destructuring)
+
+const person=["John","Smith",28];
+const fName=person[0];
+const lName=person[1];
+const age=person[2];
+This becomes verbose for larger arrays.
+
+✅ Destructuring Syntax
+
+const [fName,lName,age]=person;
+
+➤Uses square brackets [].
+➤Assign based on position/index.
+
+🔷 Important Points
+1. 🔹 You Can Skip Elements
+const [fName,,age]=person; //skips the second element
+
+2. 🔹 Fewer Variables Than Elements
+const [fName,lName]=person; //only first two elements used
+
+3. 🔹 More Variables Than Elements
+const [fName,lName,age,gender="Male"]=person;
+If gender is missing, it will default to "Male" if not defined the default value then it will assigned with undefined.
+
+5. 🔹 Original Array is Untouched
+Destructuring does not modify the original array.
+
+✅ Use Cases
+➤Returning multiple values from a function.
+➤Extracting parts of an API response.
+➤Clean, readable assignments from arrays.
+
+🔶 What is Object Destructuring?
+##################################
+
+Object destructuring is an ES6 feature that allows ys to extract properties from an object and assign them to variables in a single line using a concise syntax.
+
+✅ Traditional Way (Without Destructuring)
+const user={
+  forname:"John",
+  age:28,
+  gender:"Male"
+};
+
+const forname=user.forname;
+const age=user.age;
+const gender=user.gender;
+
+✅ With Object Destructuring
+
+const {forname,age,gender}=user;
+
+➤Uses curly braces {}.
+➤The variable name must match the property name in the object.
+➤Destructuring is based on property names, not order like arrays.
+
+🔷 Important Points
+
+1. 🔹 Variable Names Must Match Object Keys
+const {forname}=user; //OK
+const {name}=user; // ❌ Error (or `undefined` in JS) – no such property
+
+2. 🔹 Using Aliases for Variables
+If you want the variable name to be different from the property name:
+
+const {forname:fname}=user;
+console.log(fname);   //John
+
+➤forname is a property name and fname is the new variable name.
+
+3. 🔹 Mixing Destructuring with Aliases
+const {forname:fname,age,gender}=user;
+
+4. 🔹 Handling Non-Existent Properties
+const {country}=user; // ❌ Error: Property 'country' does not exist on type
+
+➤Ensure the object type includes country.
+➤Or use optional chaining (for nested objects)/defaults:
+const {country="India"}=user;
+
+✅ What is the Spread Operator?
+The spread operator(...) is a feature introduced in ES6 that unpacks elements from array or properties from objects into individual values or properties.
+
+const arr=[1,2,3]
+console.log(...arr); //Output: 1 2 3
+
+🔷 Use Cases of the Spread Operator
+
+1. 🔁 Extract Elements from an Array
+const user=["John","Mark","Mary"]
+console.log(...user)// Output: John Mark Mary
+
+2. 📋 Shallow Copy of an Array
+const user=["John","Mark","Mary"]
+const copyUsers=[...users];
+
+copyUsers.push("Steve");
+console.log(copyUsers); // // ["John", "Mark", "Mary", "Steve"]
+console.log(users); // // ["John", "Mark", "Mary"]
+
+3. ➕ Merging Arrays / Adding Elements
+const users = ["John", "Mark", "Mary"];
+const extendedUsers = ["Ravi", "Steve", ...users];
+console.log(extendedUsers); // ["Ravi", "Steve", "John", "Mark", "Mary"]
+
+✅ Spread brings in elements not as an array, but as individual items.
+
+4. 📦 Using Spread in Objects
+const person={
+  firstName:"John",
+  age:28,
+  gender:"male"
+};
+
+const employee={
+  ..person,
+  salary:1200,
+  company:"Google"
+};
+
+console.log(employee);
+//Output
+{
+  firstName:"John",
+  age:28,
+  gender:"male",
+  salary:1200,
+  company:"Google"
+};
+
+🔄 Copies all key-value pairs from person into employee.
+
+❗ Important Notes
+🔸 Shallow Copy Only
+Spread operator does not deep clone nested structures.and hence the nested object will be copied as reference so when we change in one object it will change the other also.
+
+const nested = [{ name: "John" }];
+const copy = [...nested];
+
+copy[0].name = "Steve";
+console.log(nested[0].name); // "Steve" 😱
