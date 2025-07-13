@@ -902,6 +902,7 @@ const {country}=user; // ❌ Error: Property 'country' does not exist on type
 const {country="India"}=user;
 
 ✅ What is the Spread Operator?
+##################################
 The spread operator(...) is a feature introduced in ES6 that unpacks elements from array or properties from objects into individual values or properties.
 
 const arr=[1,2,3]
@@ -962,3 +963,401 @@ const copy = [...nested];
 
 copy[0].name = "Steve";
 console.log(nested[0].name); // "Steve" 😱
+
+✅ Rest Pattern & Rest Parameters (ES6)
+########################################
+
+Both use three dots(...), just like spread operator, but their purpose is opposite.
+
+🔹 1. Rest Pattern (Used in Destructuring)
+➤Collects remaining elements in the array
+➤Used on the left side of assignment(=)
+
+Example (Array Destructuring)
+
+const [a,b,...rest]=[1,2,3,4,5]
+console.log(a); //1
+console.log(b); //2
+console.log(rest); //3,4,5
+➡️ rest gathers the remaining elements into a new array
+
+⚠️ Note:
+➤Only one rest variable allowed
+➤Must be at the end when destructuring
+
+🔹 2. Rest Parameters (Used in Functions)
+Allows passing any number of arguments int a single array parameter.
+Also used on the left side (in the function parameter list);
+
+🧪 Example:
+function addNumbers(...numbers:numbers){
+  let sum=0;
+  for(const num of numbers){
+    sum+=num;
+  }
+  return sum;
+}
+
+console.log(addNumbers(1,2,3,4,5)); //15
+➡️ numbers becomes an array of all passed arguments.
+
+✅ Nullish Coalescing Operator (??) in TypeScript
+###################################################
+To provide a default value only when a variable is null or undefined- not when it's 0,false, or an empty string.
+
+Syntax: let result=value ?? defaultValue;
+
+✅ TypeScript Example
+let username:string | null=null;
+let displayName:string=username ?? "Guest";
+console.log(displayName); // Guest
+
+🔸 Falsy But Valid:
+let age:number | undefined=0;
+let userAge:number=age ?? 18;
+
+console.log(userage); //0
+💡 0 is falsy, but not null or undefined- so it reamins.
+
+ || 🆚 ?? in TypeScript
+
+ let title:string | null ="";
+
+ let result1= title || "untitled"; // untitled
+ let result2= title ?? "untitled"; //""
+
+ Explanation:
+ || considers ""(empty string) as falsy and uses "untitled"
+ ?? keeps the empty string since it's not null or undefined.
+
+ 🔐 Type Safety Benefit
+When you declare a union type:
+
+let message: string | null | undefined;
+
+Using ?? ensures that you handle only the nullish case explicitly
+
+let finalMessage:string=message ?? "No message";
+🔸No need to check "" or false values seperately- TypeScript knows the variable may be nullish, and ?? fixes that safely.
+
+✅ Optional Chaining (?.) in TypeScript
+########################################
+Optional chaining is a safe way to access nested object properties, methods or array elements without having to manually check for null or undefined at each level.
+
+🔸 Why We Use It?
+When working with:
+➤Backend data (e.g. API response)
+➤Deeply nested objects, Or
+➤DOM elements that might not exist,
+
+you risk runtim errors like:
+❌ Cannot read properties of undefined (reading 'something')
+
+Optional chaining prevents these by short-circuiting the expression when something is null or undefined.
+
+🧠 Syntax
+object?.property
+object?.[index]
+object?.method?.()
+
+✅ Example in TypeScript
+
+🔹 Basic Setup:
+const products: Product[] = [
+  { name: "iPhone", price: 99999, details: { color: "black", ram: "8GB" } },
+  { name: "T-shirt", price: 899, details: { color: "blue" } },
+  { name: "Book", price: 499 } // no `details` property
+];
+
+🔸 Without Optional Chaining ❌ (Risky)
+for (const prod of products){
+  console.log(prod.details.color); // 💥 Error for product without `details`
+}
+
+✅ With Optional Chaining
+for (const prod of products){
+  console.log("Color: ",prod.details?.color); // ✅ Safe access
+  console.log("RAM: ",prod.details?.ram); // ✅ Safe access
+}
+
+🧪 Bonus: Optional Chaining with Functions
+const user = {
+  greet: () => "Hello!"
+};
+
+console.log(user.greet?.()); // "Hello!"
+
+const user2 = {};
+console.log(user2.greet?.()); // ✅ undefined, no error
+
+🧭 When to Use Optional Chaining
+
+Use it when:
+➤You're accessing optional or backend-provided nested data.
+
+➤You want to avoid lengthy if checks like:
+if (user && user.details && user.details.name) { ... }
+
+Instead: user?.details?.name
+
+✅ Arrow Functions in TypeScript
+#################################
+Arrow functions are a compact way to write functions,introduced in ES6 and fully Supported in TypeScript with type annotations.
+
+🔹 1. Three Ways to Declare Functions
+
+🔸 a. Function Declaration
+function print(message:string):void{
+  console.log(message);
+}
+
+🔸 b. Function Expression
+const sum=function(num1:number,num2:number):number{
+  return num1+num2;
+}
+
+🔸 c. Arrow Function
+const sum=(num1:number,num2:number):number=>{
+  return num1+num2;
+}
+
+🔹 2. Arrow Function Syntax Simplification
+
+✅ Full Syntax:
+const sum=(a:number,b:number):number=>{
+  return a+b;
+}
+
+✅ Shorter Syntax (for 1-liner body):
+const sum=(a:number,b:number):number=>a+b;
+
+✅ Single Parameter: Parentheses Optional (but only in JS):
+const square=(x:number):number=> x*x; //✅ TypeScript requires parentheses if omitted gives error
+
+🔹 3. Assigning Arrow Function to a Typed 
+
+You can declare the function type separately:
+const sum: (a: number, b: number) => number = (a, b) => a + b;
+
+This allows type inference for parameters.
+
+🔹 4. Arrow Function in Callbacks
+
+Arrow functions are perfect for callbacks like event listeners:
+const button =document.getElementById("btn");
+
+button?.addEventListener("click",()=>{
+  console.log("Button clicked!");
+})
+
+🔹 5. Arrow Functions and this
+
+Arrow function do not bind their own this. They inherit this from the surrounding (lexical scope) which is helpful in object methods and events callbacks.
+
+class Counter{
+  count=0;
+  start(){
+    setInterval(()=>{
+      this.count++;
+      console.log(this.count);
+    },1000)
+  }
+}
+
+Using regular function inside setInterval would require bind(this) or saving context in a self variable. Arrow function solves that.
+
+💡 When to Use Arrow Functions
+✅ Ideal for:
+➤Short, concise functions
+➤Callbacks (e.g. map, filter, eventListener)
+➤When you want to preserve this
+
+❌ Avoid if:
+You need dynamic this (e.g., inside some class methods)
+
+✅ Object-Oriented Programming (OOP) in TypeScript
+#####################################################
+
+OOP is a programming paradigm where real-world entities are modeled as object that have:
+➤Properties (State) – Data/attributes
+➤Methods (Behavior) – Functions/actions
+
+🧱 Why Use Classes?
+❌ Without Classes (Object Literal)
+Imagine we want to create 100 products.
+➤We are duplicating logic in every object.
+➤Easy to miss properties or functions.
+➤Hard to scale.
+
+✅ With Classes: A Blueprint
+
+class Product {
+  //Properties in class
+  name: string;
+  price: number;
+  color: string;
+
+  constructor(name: string, price: number, color: string) {
+    this.name = name;
+    this.price = price;
+    this.color = color;
+  }
+  //Methods in class
+  calcDiscount(): number {
+    return this.price * 0.1;
+  }
+
+  availability(): string {
+    return "In Stock";
+  }
+}
+
+👉 Create Objects (Instances) from the Class:
+
+const p1 = new Product("iPhone 11", 19900, "Black");
+const p2 = new Product("Shoes", 3000, "White");
+
+console.log(p1.calcDiscount()); // 1990
+
+➤Product class is a blueprint.
+➤p1, p2 are instances (actual data).
+➤All instances share same structure but have different values.
+
+🔐 Access Modifiers in TypeScript
+###################################
+Access modifiers control visibility of properties and methods in a class.
+
+✅ Three Types of Access Modifiers
+| Modifier    | Accessible From                                           |
+| ----------- | --------------------------------------------------------- |
+| `public`    | Anywhere (default)                                        |
+| `private`   | Only within the same class                                |
+| `protected` |  within the class & its subclasses |
+
+🧱 Class Example: Employee
+🎯 Goal:
+Restrict direct modification of sensitive properties like salary and hikePercentage.
+
+👨‍💼 Sample Code:
+
+class Employee {
+  name: string;
+  location: string;
+  isEligible: boolean;
+
+  private _salary: number;
+  private _hikePercentage: number;
+
+  constructor(name: string, _salary: number, location: string, isEligible: boolean, _hikePercentage: number) {
+    this.name = name;
+    this._salary = _salary;
+    this.location = location;
+    this.isEligible = isEligible;
+    this._hikePercentage = _hikePercentage;
+  }
+
+  getSalary(): number {
+    if (this.isEligible) {
+      return this._getNewSalary(); // Calls private method
+    }
+    return this.salary;
+  }
+
+  private _getNewSalary(): number {
+    return this._salary + (this._salary * this._hikePercentage / 100);
+  }
+}
+
+🚫 Problem Without Access Modifiers
+Without private, anyone can do this:
+
+const emp = new Employee("John", 10000, "London", true, 20);
+emp._salary = 20000; // ❌ Not secure
+
+✅ Solution With private
+➤salary and hikePercentage can't be modified directly from outside the class.
+➤Controlled access via methods like getSalary().
+
+🧪 Example in Action
+const emp = new Employee("John", 10000, "London", true, 20);
+console.log(emp.getSalary()); // 12000
+
+Trying this:
+console.log(emp._salary);            // ❌ Error: salary is private
+console.log(emp._getNewSalary());   // ❌ Error: private method
+
+🧠 Shorthand Property Initialization
+#######################################
+
+In TypeScript, when you add an access modifier (public, private,protected) directly to a constructor parameter, it automatically:
+
+➤Creates a class property with the same name.
+➤Initializes that property with the argument passed to the constructor.
+
+✅ Example: Without Shorthand
+
+class Employee {
+  public empName: string;
+  private _salary: number;
+
+  constructor(empName: string, salary: number) {
+    this.empName = empName;
+    this.salary = salary;
+  }
+}
+
+✅ Example: With Shorthand (Cleaner!)
+
+class Employee {
+  constructor(public empName: string, private salary: number) {}
+}
+
+🔹 Behind the scenes:
+➤public empName: string → creates this.empName and assigns the value.
+➤private salary: number → creates this.salary and makes it private.
+
+🛑 Be Careful About:
+Name Conflicts: You can't use the same name for shorthand and then declare that property again explicitly.
+
+✅ Readonly Properties in TypeScript
+#####################################
+
+➤Can be assigned only once, either during declaration or inside the constructor.
+➤Can be accessed(read) from outside the class.
+➤Cannot be modified after initialization.
+
+🔸 Declaration Syntax
+readonly propertyName:type=value; //Initialized during declaration
+readonly propertyName:type; //can be initialized in constructor
+
+or using constructor shorthand:
+
+constructor(public readonly empId:number){}
+
+🔹 Example with Shorthand & Access Modifiers
+
+class Employee {
+  constructor(
+    public readonly empId: number,               // Readonly & public
+    public empName: string,
+    private _salary: number,
+    public baseLocation: string,
+    public isEligible: boolean,
+    private _hikePercent: number
+  ) {}
+
+  public getSalary(): number {
+    return this.isEligible
+      ? this._salary + (this._salary * this._hikePercent) / 100
+      : this._salary;
+  }
+
+  private _getNewSalary(): number {
+    return this.getSalary(); // Example of internal method usage
+  }
+}
+
+const emp = new Employee(101, "John Smith", 10000, "London", true, 20);
+console.log(emp.empId);        // ✅ Allowed (read)
+emp.empId = 201;               // ❌ Error (cannot assign to readonly)
+
