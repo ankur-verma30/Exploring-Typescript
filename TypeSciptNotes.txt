@@ -1361,3 +1361,271 @@ const emp = new Employee(101, "John Smith", 10000, "London", true, 20);
 console.log(emp.empId);        // ✅ Allowed (read)
 emp.empId = 201;               // ❌ Error (cannot assign to readonly)
 
+✅ Inheritance in TypeScript
+###########################
+Inheritance is a core concept of OOP that allows a class(child/derived class) to inherit properties and methods from another class (parent/base class).
+
+🔹 Why Use Inheritance?
+➤Avoid code duplication
+➤Code reusability
+➤Improves Maintainability
+➤Helps in keeping the code organized
+
+Base / Parent Class: The class being inherited from (e.g., Person)
+Derived / Child Class: The class that inherits (e.g., Employee, Athlete)
+
+🔹 Inheritance Syntax in TypeScript
+class Child extends Parent {}
+
+🔹 Calling Parent constructor
+Use super(...) inside the child constructor before accessing this.
+
+✅Example:
+class Person{
+  constructor(public name:string,public dob:string,public gender:string){}
+
+  calculateAge():number{
+    const currentYear=new Date().getFullYear();
+    const birthYear=new Date(this.dob).getFullYear();
+
+    return currentYear-birthYear;
+  }
+}
+
+class Employee extends Person{
+  constructor(public name:string,public dob:string,public gender:string,private _salary:number,private _bonus:number){
+    super(name,dob,gender);
+  }
+
+  getSalary():number{
+    return this._salary+this._bonus;
+  }
+}
+
+//Create an instanceof
+const emp=new Employee("Ankur Verma","2003-08-30,"male",100000,2000);
+
+//Output results
+console.log("Name:", emp._name);
+console.log("Age:", emp.calculateAge());
+console.log("Total Salary:", emp.getSalary());
+
+Overriding & Protected Modifier in TypeScript
+################################################
+
+🔹 What is Method Overriding?
+➤A child class redefine a method of the parent class.
+➤The overridden method in the child class will be called instead of the one in the parent.
+
+🔹 Access Modifiers Recap:
+| Modifier    | Accessible In | Accessible In Child Class |
+| ----------- | ------------- | ------------------------- |
+| `public`    | Everywhere    | ✅ Yes                     |
+| `private`   | Inside class  | ❌ No                      |
+| `protected` | Inside class  | ✅ Yes                     |
+
+➤If a property is marked private, even the child class can't access it.
+➤Use protected if the child class should access the property.
+
+✅ TypeScript Code Example
+class Person{
+  constructor(public name:string,protected dob:string,public gender:string){}
+
+  calculateAge():number{
+  console.log("calculateAge of Person called");
+    const currentYear = new Date().getFullYear();
+    const birthYear = new Date(this._dob).getFullYear();
+    return currentYear - birthYear; 
+  }
+}
+
+class Employee extends Person{
+  constructor(public name:string,public dob:string,public gender:string,private _salary:number,private _bonus:number){
+    super(name,dob,gender);
+  }
+  
+  override calculateAge():number{
+    console.log("calculateAge of Employee called");
+    return 2024 - new Date(this._dob).getFullYear();
+  }
+
+  getSalary():number{
+    return this._salary+this._bonus;
+  }
+}
+
+const emp = new Employee("John", "08/30/1991", "male", 10000, 2000);
+console.log("Name:", emp._name);
+console.log("Age:", emp.calculateAge());      // Overridden method
+console.log("Salary:", emp.getSalary());
+
+const person = new Person("Jane", "05/15/1990", "female");
+console.log("Person Age:", person.calculateAge()); // Base class method
+
+🧠 Key Takeaways:
+➤Use protected for properties you want to access in both parent and child classes.
+➤Use override keyword (optional in TypeScript, but good for clarity) when overriding a method.
+
+✅ Overridden methods are called based on the actual object, not the reference type.
+🔧 Simple Analogy (Real-World):
+Imagine you have a reference labeled "Vehicle", but you attach a Car object to it.
+
+Even though the label says "Vehicle", the actual object is a Car.
+So if you press the "start" button (i.e., call the start() method), the Car's version of the method will run — not the generic Vehicle one.
+
+🧪 Code Example in TypeScript
+class Person {
+  constructor(public _name: string) {}
+
+  greet() {
+    console.log("Hello from Person");
+  }
+}
+
+class Employee extends Person {
+  greet() {
+    console.log("Hello from Employee");
+  }
+}
+
+// 👇 Reference is of type Person
+let someone: Person;
+
+// 👇 But actual object is of type Employee
+someone = new Employee("John");
+
+// 🔥 This will call the Employee's greet(), NOT Person's greet()
+someone.greet(); // Output: Hello from Employee.
+
+🔁 Why This Happens:
+This behavior is called dynamic dispatch or runtime polymorphism — the method is selected at runtime based on the actual object type, not the variable’s declared type.
+
+❗If Method Wasn't Overridden:
+class Employee extends Person {
+  // no override
+}
+
+let someone: Person = new Employee("John");
+someone.greet(); // Output: Hello from Person
+Here, since Employee didn’t override greet(), it calls the parent’s version.
+
+✅ Getters and Setters
+########################
+Getters: Used to read private/protected properties safely.
+Setters: Used to write/set values with validation if needed.
+
+Common in OOP to encapsulate and control access of data.
+
+🔧 Basic Example
+class Person{
+  public name:string;
+  private _age:number|null=null;
+
+  constructor(name:string){
+    this.name=name;
+  }
+
+  //Getters
+  get age():number{
+    if(this._age!=null) return this._age.
+    throw new Error(`Age is not defined for ${this.name}`);
+  }
+
+  //Setters
+  set age(value:number){
+    if(value<0) throw new Error(`Age is not defined for person ${this.name}`)
+    this._age=value;
+  }
+}
+
+✅ Usage:
+const p = new Person("John");
+
+p.age = 30;           // setter gets called ✅
+console.log(p.age);   // getter gets called ✅
+
+🧠 Why Use Getters and Setters?
+| Feature         | Benefit                                                                 |
+| --------------- | ----------------------------------------------------------------------- |
+| Access control  | Keep property `private`, but expose safe access                         |
+| Validation      | Can add rules (e.g., age must be positive) before assigning             |
+| Computed values | Can return values derived from private data (like diameter from radius) |
+| Encapsulation   | Internal data structure can change without affecting external code      |
+
+🧮 Computed Property Example (Circle Class)
+
+class Circle {
+  private _radius: number = 0;
+
+  get radius(): number {
+    return this._radius;
+  }
+
+  set radius(value: number) {
+    this._radius = value;
+  }
+
+  // Computed Property
+  get diameter(): number {
+    return this._radius * 2;
+  }
+
+  set diameter(value: number) {
+    this._radius = value / 2;
+  }
+}
+
+✅ Usage
+const c = new Circle();
+c.diameter = 10;
+console.log(c.radius);    // 5
+console.log(c.diameter);  // 10
+
+🧵 Real-Life Analogy
+Think of getters and setters like ATM operations:
+
+Getter → Viewing balance — safe, read-only.
+Setter → Depositing cash — you must follow rules (no fake notes!).
+
+✅ What Are Static Methods and Properties?
+###########################################
+Static members belong to class itself, not to instances of class.
+
+🔁 Instance vs Static Members
+| Category     | Belongs To | Accessed Using        | Copied Per Object? |
+| ------------ | ---------- | --------------------- | ------------------ |
+| **Instance** | Object     | `objectInstance.name` | ✅ Yes              |
+| **Static**   | Class      | `ClassName.name`      | ❌ No (shared)      |
+
+🔧 Basic Syntax
+class Employee {
+  static count = 0; // Static property
+
+  constructor(public firstName: string, public lastName: string) {
+    Employee.count++; // Access using class name
+  }
+
+  static sayHello() {
+    return "Hi there"; // Static method
+  }
+}
+
+const emp1 = new Employee("John", "Doe");
+const emp2 = new Employee("Jane", "Smith");
+
+console.log(Employee.count);        // ✅ 2 (shared count)
+console.log(Employee.sayHello());   // ✅ "Hi there"
+
+❌ You cannot do emp1.count or emp1.sayHello() because count and sayHello are not instance members.
+
+🔥 Key Rules to Remember
+ ➤Use static keyword to declare static members.
+ ➤Static members cannot be accessed using this inside the constructor or static methods.
+ ➤Access static members using ClassName.staticMember.
+ ➤There is only one copy of a static property shared across all instances.
+
+🧠 Real-Life Analogy
+Think of static members like company-wide policies:
+All employees (instances) share the same policy (static property).
+But each employee has their own name, ID (instance properties).
+
