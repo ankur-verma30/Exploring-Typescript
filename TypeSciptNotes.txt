@@ -1629,3 +1629,487 @@ Think of static members like company-wide policies:
 All employees (instances) share the same policy (static property).
 But each employee has their own name, ID (instance properties).
 
+✅ Abstract Class
+###################
+An abstract class in TypeScript provides a base class with common logic and abstract methods that must be implemented by derived classes. It cannot be instantiated directly and is mainly used to enforce a structure among subclasses.
+
+💡 Why Use Abstract Classes?
+To define a blueprint or base structure for subclasses:
+➤You can define common properties/methods.
+➤You can enforce method implementation.
+
+🧱 Structure & Syntax
+abstract class Employee{
+  constructor(public firstName:string,public lastName:string){}
+
+  //Abstract method:no implementation here
+  abstract getSalary():number;
+}
+
+❌ Cannot Instantiate
+const emp=new Employee("Ankur","Verma"); //❌Error:Cannot create an instance of an abstract class
+
+🧬 Inheriting Abstract Class
+class PermanentEmployee extends Employee{
+  constructor(firstName:string,lastName:string,private monthlySalary:number){
+    super(firstName,lastName); //call parent constructor
+  }
+
+  getSalary():number{
+    return this.monthlySalary*12;
+  }
+}
+
+class ContractEmployee extends Employee{
+  constructor(firstName:string,lastName:string,private hourlyRate:number){
+    super(firstName,lastName)
+  }
+
+  getSalary():number{
+    return this.hourlyRate*9*365; //assuming 9hours/day, 365 days/year
+  }
+}
+
+🚀 Usage
+const emp1=new PermanentEmployee("Ankur","Verma",4000);
+console.log(emp1.getSalary());// Output: 48000
+
+const emp2= new ContractEmployee("John", "Doe",10);
+console.log(emp2.getSalary()) // Output: 32850
+
+➤If a method is abstract then the class should also be abstract
+➤Contains both abstract & non-abstract code - We can mix implemented and abstract methods. 
+
+🧠 Real-World Analogy
+Think of Employee as a template:
+You don’t hire an “Employee” directly.
+You hire either a PermanentEmployee or a ContractEmployee, each with their own getSalary() logic.
+
+✅private Constructor in TypeScript
+####################################
+➤A private constructor prevents a class from beging instantiated directly from outside.
+➤It's used to control object creation,which is essential for design pattern like Singleton.
+
+🎯 Singleton Design Pattern
+A Singleton is a design pattern that ensures a class has only one instance and provides a global access point to it.
+In TypeScript, we use a private constructor to restrict instantiation and a static method to return the same instance every time.
+
+🧱 Implementation Steps
+class Person{
+  //Step 1: Static property to hold the instance
+  private static _instance:Person;
+
+  //Step 2: Private constructor to prevent external instantiation
+  private constructor() {}
+
+  //Step 3: Static method to control instance creation
+  static getInstance():Person{
+    if(!Person._instance){
+      Person._instance=new Person();
+    }
+    return Person._instance;
+  }
+}
+cosnt person1=Person.getInstance();
+const person2=Person.getInstance();
+
+console.log(person1==person2); //✅ true-both are same instance
+
+📦 Real-world Use Cases of Singleton
+➤Database connections
+➤Logging services
+➤Configuration managers
+➤Caching
+➤Shared app-wide services(e.g. Usersession, Auth)
+
+✅ Interface in TypeScript
+###########################
+➤An interface in TypeScript is like a contract that forces an object or class to follow a specific structure. It improves code reliability, readability, and allows for polymorphism without inheritance.
+➤It is used for type-checking and enforcing shape without providing any implementation.
+➤Think of it as a blueprint for objects/classes;
+
+🧱 Syntax and Example
+inteface User{
+  firstName:string;
+  lastName:string;
+  greetUser():void;
+  getFullName():string;
+}
+Only declaration are allowed- no initialization or implementation.
+
+🎯 Using Interface as Type
+const user1:User={
+  firstName:'John',
+  lastName:'Smith',
+  greetUser():void{
+    console.log('Hello User');
+  }
+
+  getFullName():string{
+    return this.firstName+" "+this.lastName;
+  }
+};
+The object must match all properties and methods defined in the interface.
+
+👨‍🏫 Implementing Interface in Classes
+class Admin implements User{
+  constructor(public firstName:string,public lastName:string){}
+
+  greetUser(){
+    console.log(`Hello Admin ${this.getFullName()}`);
+  }
+
+  getFullName(){
+    return `${this.firstName} ${this.lastName}`;
+  }
+}
+This class must implment all members of the interface.
+
+📌 Real-world Example – Polymorphism with Interfaces
+function displayGreetMessage(user:User){
+  user.greeUser();
+}
+
+const admin=new Admin("John","Smith");
+displayGreetMessage(admin); // Works because admin implements User
+
+➤You can pass any class instance that implements the interface. 
+
+🔁 Interface vs Type Alias
+| Feature             | Interface       | Type Alias                 |
+| ------------------- | --------------- | -------------------------- |
+| Extension           | Can be extended | Can use intersection (`&`) |
+| Declaration merging | ✅ Yes           | ❌ No                       |
+| Use with classes    | ✅ Preferred     | 👎 Not ideal               |
+| Implementation      | No logic        | No logic                   |
+
+⚠️ Interface vs Abstract Class
+| Aspect                | Interface              | Abstract Class               |
+| --------------------- | ---------------------- | ---------------------------- |
+| Implements logic?     | ❌ Only declarations    | ✅ Can have logic             |
+| Multiple inheritance? | ✅ Multiple interfaces  | ❌ Only one abstract class    |
+| Object creation?      | ❌ Not allowed          | ❌ Not allowed                |
+| Use case              | Contract for structure | Base class with shared logic |
+
+🔐 Multiple Interface Implementation
+interface Role {
+  roleName: string;
+}
+
+class Manager implements User, Role {
+  constructor(public firstName: string, public lastName: string, public roleName: string) {}
+
+  greetUser() {
+    console.log(`Hello Manager ${this.getFullName()}`);
+  }
+
+  getFullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
+}
+
+✅ Benefits of Using Interfaces
+➤Type Safety – Catch errors at compile time.
+➤Code Readability – Acts as clear documentation.
+➤Reusability – Use across classes/functions.
+➤Flexibility – Easily extendable and scalable.
+
+🛡️ readonly Properties in Interfaces
+######################################
+➤ A readonly property can only be set once (at initialization)
+➤ It prevents mutation after object creation, ensuring immutability.
+
+✅ Syntax:
+interface User{
+  readonly company:string;
+}
+
+❌ Wrong: Mutating readonly property
+
+let admin: User = { company: "Google" };
+admin.company = "Microsoft"; // ❌ Error: Cannot assign to 'company' because it is a read-only property.
+
+⚠️ Important:
+The readonly restriction only works if the variable is typed as the interface.
+If it's typed as a class (e.g., Admin), and the class doesn't use readonly, it won't throw an error.
+
+✅ Solution:
+Either use readonly in the class definition:
+class Admin implements User {
+  readonly company = "Google";
+}
+
+Or type the object using the interface:
+const admin: User = new Admin("John", "Smith"); // Enforces readonly
+
+❓ Optional Properties in Interfaces
+######################################
+➤Optional properties may or may not be present in the Implementing class or object.
+
+✅ Syntax:
+interface User{
+  location?:string;
+}
+🔄 Behavior:
+➤ If location is not defined in a class implementing User, no error occurs.
+➤ If defined, it must be of the correct type.
+
+class Member implements User{
+  location?:string; // Optional
+  constructor(public firstName:string,public lastName:string,loc?:string){
+    this.location=loc;
+  }
+}
+
+✅ Optional Constructor Parameters
+Use ? to make constructor parameters optional:
+
+constructor(public firstName: string, public lastName: string, loc?: string) {
+  this.location = loc ?? "London"; // ✅ Set default value if not provided
+}
+❗ Note:
+You cannot use both ? and default value at the same time like loc?: string = "London" — it will throw an error.
+
+Instead, use:
+this.location = loc ?? "London"; // Fallback to "London" if undefined
+
+✅ Implementing Multiple Interfaces in a Class
+##################################################
+
+interface User {
+  name: string;
+  getFullName(): string;
+}
+
+interface Role {
+  getRole(): string;
+}
+
+class Admin implements User, Role {
+  constructor(public name: string) {}
+
+  getFullName(): string {
+    return `Full Name: ${this.name}`;
+  }
+
+  getRole(): string {
+    return "Admin";
+  }
+}
+
+🔸 Key Points:
+➤ Use commas to implement multiple interfaces.
+➤ You must implement all properties and methods from all interfaces.
+➤ A class can implement as many interfaces as needed.
+
+✅ Extending an Interface from Another
+🔹 Syntax
+interface Role {
+  getRole(): string;
+}
+
+interface User extends Role {
+  name: string;
+  getFullName(): string;
+}
+
+Now User contains: name, getFullName(), getRole() (from Role)
+
+🔸 Key Points:
+➤ Use extends keyword when one interface inherits from another.
+➤ You can extend multiple interfaces:
+
+interface User extends Role, Permissions, MetaData { ... }
+
+Any class implementing User must implement everything from User, Role, Permissions, etc.
+
+✅ Interface vs Class Extension Rules
+| Feature                        | Class                | Interface                  |
+| ------------------------------ | -------------------- | -------------------------- |
+| Extend multiple types?         | ❌ Only **one** class | ✅ Can extend **multiple**  |
+| Implement multiple interfaces? | ✅ Yes                | –                          |
+| Syntax                         | `class A extends B`  | `interface A extends B, C` |
+
+✅ Method Access After Extending
+
+If:
+interface User extends Role {
+  name: string;
+}
+
+Then:
+let admin: User = new Admin("John");
+admin.getRole(); // ✅ Works because `User` extends `Role`
+
+✅ Defining Function Types in TypeScript
+############################################
+
+🔸 Using type:
+type SumFn=(num1:number,num2:number)=> number;
+
+const add:SumFn=(n1,n2)=>n1+n2;
+➤ You define a type alias with parameters and return type.
+➤ Then use it to assing a funciton to a variable.
+➤ The function must match the declared signature.
+
+🔸 Using interface:
+interface SumFn{
+  (num1:number,num2:number)=>number;
+}
+
+const add:SumFn=(n1,n2)=>n1+n2;
+➤ The interface represents a function type.
+➤ Used in the same was as type alias.
+➤ If the function signature doesn't match, TypeScript throws an error.
+
+🎯 Why Use Function Interfaces?
+Mostly useful for:
+Complex function structures
+Reusability in large codebases
+
+But in real-world use, the type alias is preferred
+
+ 🔷 Intersection Types
+ #######################
+
+ Union vs. Intersection Types
+
+ 🔹 Union Type (|)
+ type StringOrNumber=string | number;
+
+ let x:StringOrNumber
+ x='hello';
+ x=42;
+ x=true;  //// ❌ Error: boolean not assignable
+You can assign either a string or a number.
+
+🔹 Intersection Type (&)
+type BoolOrNumber=boolean | number;
+type StringOrNumber=string | number;
+
+type MyNumbertype= StringOrNumber & BoolOrNumber;
+let x:MyNumbertype;
+x=42;       //✅ OK
+x='hello';  // ❌ Error
+x=true;     // ❌ Error
+✅ Only the common type between both (i.e., number) is allowed.
+
+🔷 Intersection of Complex Types (Objects)
+type User={
+  name:string;
+  age:number;
+};
+
+type Admin={
+  name:string;
+  role:string;
+}
+
+type AdminUser=User & Admin;
+
+cosnt john:AdminUser={
+  name:'John',
+  age:30,
+  role:'admin'
+};
+✅ The final object must have all properties from both User and Admin.
+
+🔧 Using interface with Intersection
+interface Order{
+  id:number;
+  items:string[];
+}
+
+function processOrder(order:Order &{status :string}){
+  console.log(order.id,order.items,order.status); //combined the property of Order interface and status property
+}
+
+processOrder({id:123,items:['item1','item2'],status:'shipped'});
+✅ The function expects an object with both order structure and a status property.
+
+🧪 Quiz Yourself
+What does type A = string & number evaluate to?
+❌ Error – no overlap, results in never
+
+What will be the type of User & Admin?
+✅ { name: string; age: number; role: string }
+
+✅ Type Guards in TypeScript
+###############################
+Type Guards help you narrow down the type of a variable withing a conditional block, ensuring type-safe operations on union types.
+
+🔹 Why Use Type Guards?
+In Typescript, we often deal with union types like:
+type value=string | number;
+You can't safely call string methods on value unless you narrow it to string. That's where type guard come in.
+
+🔹 Built-in Type Guards
+1. typeof (for primitives)
+function printLength(value:string | number){
+  if(typeof==='string'){
+    console.log(value.length); // ✅ Safe: narrowed to string
+  }
+  else{
+    console.log(value.toFixed(2)); // ✅ Safe: narrowed to string
+  }
+}
+
+2. instanceof (for class instances)
+class Dog{
+  bark(){
+    console.log('Bark');
+  }
+}
+
+class Cat{
+  meow(){
+    console.log('Meow');
+  }
+}
+
+function speak(animal:Dog | Cat){
+  if(animal instanceof Dog){
+    animal.bark(); // ✅ Dog
+  }
+  else {
+    animal.meow(); // ✅ Cat
+  }
+}
+
+3. in Operator (for property existance)
+type Circle={radius:number};
+type Square= { side: number};
+
+function area(shape:Circle | Square){
+  if('radius' in shape){
+    return Math.PI*shape.radius**2;
+  }
+  else{
+    return shape.side**2;
+  }
+}
+
+🔹 Custom Type Guards (User-defined)
+Create your own function to check type and narrow:
+type Admin={
+  role:'admin';
+  privileges:string[]
+  };
+type User={
+  role:'user';
+  email:string
+};
+
+function isAdmin(person: Admin | User): person is Admin{
+  return person.role==='admin';
+}
+
+function handlePerson(p:Admin | User){
+  if(isAdmin(p)){
+    console.log(p.privileges); // ✅ Safe: p is admin
+  }
+  else{
+    console.log(p.email); // ✅ Safe: p is user
+  }
+}
+
