@@ -2113,3 +2113,180 @@ function handlePerson(p:Admin | User){
   }
 }
 
+✅ Discriminated Union in TypeScript
+#######################################
+Discriminated Union(also called Tagged Union) is a way to implement type guards using a common property (called as "tag") across multiple interfaces.
+
+🔹 Key Concept:
+Each interface is the union includes a common literal property like kind or type. This tag 'discriminates' which type the object belongs to.
+
+🔸 Example Setup:
+interface Circle{
+  kind:'circle'; //literal type
+  radius:number;
+}
+
+interface Square{
+  kind:'square';  //literal type
+  length:number;
+}
+
+type Shape=Circle | Square;
+
+🔸 Function Using Discriminated Union:
+function calculateArea(shape:Shape): number{
+  switch(shape.kind){
+    case 'circle':
+    return 3.14*shape.radius**2;
+    case 'square':
+    return shape.length**2;
+  }
+}
+
+🧪 Example Calls:
+console.log(calculateArea({kind:'square', length:12}));
+console.log(calculateArea({kind:'circle', radius:7}));
+
+🔍 Why Use This?
+➤ Helps Typescript infer types inside branches.
+➤ Avoids unsafe property access.
+➤ Scales well when adding more shapes like Rectangle, Triangle, etc.
+
+✅ Type Casting in TypeScript
+###############################
+Type castingn is used to explicitly tell the Typescript compiler to treat a variable as a specific type.
+
+🔹 Scenario:
+When accessing an element using document.querySelector, Typescript may infer the type as Element | null, not the exact type like HTMLInputElement.
+
+✅Example:
+const fname=document.querySelector("#fname"); //inferred as Element | null
+Trying to access fname.value will cause an error because Element doestn't guarantee a value property.
+
+🔸 Problem:
+➤ fname might be null
+➤ Element does not always have a value property;
+
+🔸 Solution: Type Cast
+✅ Method 1: Angle Bracket Syntax
+const fname=<HTMLInputElement>document.querySelector("#fname");
+fname.value="John";
+
+✅ Method 2: as Syntax
+const fname =document.querySelector("#fname") as HTMLInputElement;
+fname.value="John";
+Use the as keyword expecially in React/JSX code, as angle brackets can be misinterpreted as JSX.
+
+⚠️ Caution:
+➤ Use !(non-null assertion) only if you're sure the element exists.
+➤ If the element might be null, use a conditional check.
+
+✅Example:
+const fname=document.querySelector("fname");
+if(fname){
+  (fname as HTMLInputElement).value="John";
+}
+
+✅ Index Signatures (Indexed Properties) in TypeScript
+#######################################################
+Index signature allow yo uto define objects with dynamic property names- especially useful when property names are not know ahead of time.
+
+🔸 Syntax:
+interface Example{
+  fixedProeprty:string;
+  [prop:string]:sting | number;
+}
+➤ prop: placeholder for unknown property names( can be named anything)
+➤ string: type of the property name
+➤ string | number : type of the value allowed
+
+🔸 Example 1: Product with Optional/Dynamic Properties
+interface Product{
+  id: number;
+  name:string;
+  [prop:string]: string | number;
+}
+
+const product1={
+  id:1,
+  name:"T-Shirt",
+  color:"Red",
+  price:123,
+}
+
+const product2: Product = {
+  id: 2,
+  name: "Mug",
+  material: "Ceramic",
+  capacity: 300
+}
+
+🔸 Example 2: Settings with Flexible Keys
+
+interface Settings {
+  [props: string]: boolean | string | number;
+}
+
+const mySettings: Settings = {
+  darkMode: true,
+  fontSize: 16,
+  customTheme: "Pink"
+};
+
+🧠 When to Use Index Signatures:
+➤ When objects can have varying properties.
+➤ When working with settings, prefrences, or configuarations.
+➤ When building collections of heterogeneous objects.
+
+✅ Function Overloading in TypeScript
+########################################
+It allows you to define multiple function signature for a single function. Based on the arguments types, Typescript can infer what the return type will be.
+
+🔹 Why Do We Need It?
+When we have a function that:
+➤ Accepts different types of parameters (e.g. number and string).
+➤ Returns different types based on input types
+It allows Typescript to infer the correct return type, enabling IntelliSense and type saftey (e.g. method suggestions like .split() for string only).
+
+🔹 Real-World Example
+Suppose we have an addition function that:
+Concatenates strings when inputs are strings.
+Adds values when inputs are numbers.
+
+Here's the shorthand syntax-based TypeScript implementation:
+
+type StringOrNumber = string | number;
+
+// ✅ Function overloads
+function addition(a: number, b: number): number;
+function addition(a: string, b: string): string;
+function addition(a: number, b: string): string;
+function addition(a: string, b: number): string;
+
+// 🔧 Actual implementation (compatible with all overloads)
+function addition(a: StringOrNumber, b: StringOrNumber): StringOrNumber {
+  return a.toString() + b.toString(); // Concatenate everything
+}
+
+// 🧪 Usage
+
+const result1 = addition(10, 20); // number => 30
+const result2 = addition("Hello", "World"); // string => HelloWorld
+const result3 = addition("Hello", 123); // string => Hello123
+
+// ✅ TypeScript knows result2 is string, so split is allowed
+const words = result2.split(""); // Works!
+
+// ❌ This will show error: Property 'split' does not exist on type 'number'.
+// const broken = result1.split("");
+
+🔹 What Problem Does It Solve?
+If you don’t use function overloading, TypeScript sees this:
+function addition(a: string | number, b: string | number): string | number
+
+Then calling:
+const result = addition("hello", "world");
+result.split(","); // ❌ Error! split not available on type string | number
+
+Because the type is ambiguous: string | number.
+With overloads, TypeScript knows the exact type based on the arguments.
