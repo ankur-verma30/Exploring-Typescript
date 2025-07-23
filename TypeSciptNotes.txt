@@ -2363,4 +2363,145 @@ function printLength<T extends {length:number}>(val:T):void{
   console.log(val.length);
 }
 
+Creating Generic Functions in TypeScript
+#########################################
+
+✅Example 1: swap Function
+You built a function that swaps elements in an array regardless of the element types.
+
+🔸 Syntax:
+function swap<T>(arr:T[],index1:number,index2:number):T[]{
+  if(index1<0 || index1>=arr.length || index2<0 || index2>= arr.length){
+    throw new Error("Invalid index");
+  }
+  [arr[index1],arr[index2]]=[arr[index2],arr[index1]];
+  return arr;
+}
+
+🔸 How It Works:
+➤ T is a generic placeholder.
+➤ If you pass an array of numbers, T=number.
+➤ If you pass an array of strings, T=string
+
+🔸 Examples:
+swap([1, 2, 3], 0, 2);            // returns [3, 2, 1]
+swap(["a", "b", "c"], 1, 2);      // returns ["a", "c", "b"]
+
+✅ Example 2: expand Function
+You created a function to merge two objects using generics.
+
+🔸 Initial Version:
+function expand(obj1: object, obj2: object): object {
+  return Object.assign(obj1, obj2);
+}
+
+❌ Problem:
+➤ The return type is object, so TypeScript doesn’t know the merged object’s shape.
+➤ Accessing combined.name causes a type error: "Property 'name' does not exist".
+
+✅ Using Multiple Generics
+To fix this, introduce generic T and U:
+
+function expand <T,U>(obj1:T, obj2:U){
+  return Object.assign(obj1,obj2);
+}
+Now:
+➤ If obj1 has {name: string, age: number}
+➤ And obj2 has {name:string, gender: string}
+➤ The merged result has type {name:string, age: number, gender: string}
+
+🔸 Usage:
+const combined=expand(
+  {name: 'John', age:28},
+  {name:'John', gender:'male'}
+);
+console.log(combined.name) // ✅ Works!
+
+❗ Note on Type Constraints
+➤ The current expand function may still throw an error if obj1 or obj2 is not an object.
+➤ To fix this, Constraints like <T extends object> will be used.
+
+🧠 What Are Generic Constraints in TypeScript?
+################################################
+➤ Generic constraints limit what types can be passed to a generic.
+➤ You use extends keyword to apply such constraints.
+➤ This is useful to enforce type saftey in generic utility functions.
+
+🔧 Use Case: Merging Two Objects Safely
+You want to merge two objects safely using a function.
+
+function merge<T extends object, U extends object>(obj1:T,obj2:U){
+  return {...obj1,...obj2};
+}
+Here:
+➤ T and U must be objects(✅ not allowed: numbers, strings, arrays).
+➤ The constraints T extends object ensures that T must be an object.
+
+🧪 Code Example with Explanation
+const obj1={name:"John", age:25};
+const obj2={gender:"Male", name:"Steve"};
+
+const combined=merge(obj1,obj2);
+// combined: { name: "Steve", age:25, gender:"Male"};
+
+➤ This function creates a new object using the spread operator.
+➤ Since both are objects and satisfy the constraint, it works fine.
+
+❌ What if You Violate the Constraint?
+merge(100, { name:"John"}); //❌ Error: 100 is not an object
+merge({name:"John"}, "hello"); //❌Error: string is not an object
+
+➤ Without extends object, Typescript would allow this and might cause runtime issues.
+➤ Using constraints prevents passing types like number, string, or null.
+
+
+💡 Why Use Constraints?
+➤ Enforces only valid inputs are passed.
+➤ Improves type inference and developer tooling like IntelliSense.
+➤ Helps you avoid runtime bugs early.
+
+✅ Bonus Tip
+You can also constrain generics to:
+➤ Arrays: T extends any[]
+➤ Specify keys: T extends {id: number}
+➤ Custom interfaces: T extends MyInterface
+
+🔑 keyof Constraint in TypeScript
+To ensure the second parameter passed to a funciton must be a valid key of the object passed as the first parameter.
+
+✅ Problem Without Constraint
+function getPropValue(obj:Object, key: string){
+  return obj[key]; //❌ Typescript will throw error
+}
+Typescript complains because it can't guarantee key exist on obj.
+
+✅ Solution Using keyof Constraint
+function getPropValue<T extends object, K extends keyof T>(obj:T, key:K){
+  return obj[key];
+}
+➤ T -> the object type.
+➤ K extends keyof T -> The key must be one of the property names (keys) of T.
+
+📌 Example Usage
+const user={
+  name:"Alice",
+  age:30,
+};
+
+const name=getPropValue(user,"name"); //✅ Works fine
+const age=getPropValue(user, "age"); //✅ Works fine
+const gender =getPropValue(user,"gender"); //❌ Error: "gender" is not a key of user
+
+📘 What keyof T Does
+➤ Turns the object type into a union of its keys:
+
+type User= {name:string, age:number};
+type Keys= keyof User; // "name" | "age"
+➤ So now, K extends keyof T ensures key must be "name" or "age" in the above case.
+
+🎯 Benefits
+➤ Prevents accessing non-existing properties.
+➤ Gives autocomple suggestions.
+➤ Catches errors at compile tiem.
+➤ Improves code type saftey and developer productivity.
 
