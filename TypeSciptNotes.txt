@@ -2467,6 +2467,7 @@ You can also constrain generics to:
 ➤ Custom interfaces: T extends MyInterface
 
 🔑 keyof Constraint in TypeScript
+#####################################
 To ensure the second parameter passed to a funciton must be a valid key of the object passed as the first parameter.
 
 ✅ Problem Without Constraint
@@ -2505,3 +2506,220 @@ type Keys= keyof User; // "name" | "age"
 ➤ Catches errors at compile tiem.
 ➤ Improves code type saftey and developer productivity.
 
+✅ Generic Classes in TypeScript
+##################################
+Generic classes allow you to write reusable class logic that can work with any data type.
+
+💡 Why use generic classes?
+To create flexible classes that work with different data types without duplicating code.
+
+🧱 Syntax Example:
+class ShoppingCaryt<T>{
+  private _items:T[]=[];
+
+  addItem(item:T){
+    this._items.push(item);
+  }
+
+  getItems():T[]{
+    return this._items;
+  }
+}
+➤ T is a type placeholder
+➤ T[] means this class will work with an array of whatever type you specify when creating an instance.
+
+📦 Usage Example with Custom Types:
+type Book={
+  name:string;
+  pages:number;
+  price:number;
+}
+
+type Cloth={
+  name:string;
+  size:string;
+  price:number;
+}
+const bookCart = new ShoppingCart<Book>();
+bookCart.addItem({ name: "Book A", pages: 250, price: 30 });
+bookCart.addItem({ name: "Book B", pages: 300, price: 40 });
+
+console.log(bookCart.getItems()); // Array of Book
+
+const clothCart = new ShoppingCart<Cloth>();
+clothCart.addItem({ name: "T-Shirt", size: "M", price: 25 });
+
+console.log(clothCart.getItems()); // Array of Cloth
+
+🔡 Can Also Be Used with Primitive Types:
+const stringCart = new ShoppingCart<string>();
+stringCart.addItem("hello");
+stringCart.addItem("world");
+
+console.log(stringCart.getItems()); // ["hello", "world"]
+
+🧠 When to Use a Generic Class
+Use generic classes when:
+➤ You want the same class logic to work across multiple types.
+➤ You want to keep the class strongly typed based on the provided type.
+➤ You want to avoid repeating similar class code for each type.
+
+🔁 With Shorthand Constructor Example:
+class Repository<T> {
+  constructor(private _items: T[] = []) {}
+
+  add(item: T) {
+    this._items.push(item);
+  }
+
+  getAll(): T[] {
+    return this._items;
+  }
+}
+
+🔁 Generic Types vs Union Types in TypeScript
+###############################################
+✅ Generic Types
+Generics allow writing reusable code that works with any specific type, provided at the time of usage.
+
+🧠 Concept:
+Define type once, use many times with different types, but with strict consistency per instance.
+
+📦 Example: Generic Class
+class ShoppingCart<T> {
+  private _items: T[] = [];
+
+  addItem(item: T): void {
+    this._items.push(item);
+  }
+
+  getItems(): T[] {
+    return this._items;
+  }
+}
+
+🔸 Usage
+const stringCart = new ShoppingCart<string>();
+stringCart.addItem("Book");
+// stringCart.addItem(100); ❌ Error — number not allowed
+
+const numberCart = new ShoppingCart<number>();
+numberCart.addItem(100);
+// numberCart.addItem("Book"); ❌ Error — string not allowed
+
+✅ Benefits of Generics:
+➤ Type-safe per instance
+➤ Reusable logic without type repetition
+➤ Compile-time error checking
+➤ Better for classes/methods where the type is consistent per use case but can differ across scenarios.
+
+🚫 Union Types
+Union types allow a variable to be one of several types, but they don't enforce consistency between related values.
+
+📦 Example:
+class ShoppingCart {
+  private _items: (string | number)[] = [];
+
+  addItem(item: string | number): void {
+    this._items.push(item);
+  }
+
+  getItems(): (string | number)[] {
+    return this._items;
+  }
+}
+
+const cart = new ShoppingCart();
+cart.addItem("Apple");
+cart.addItem(42); // ✅ Both allowed, but mixed types inside array
+
+❗Problem:
+Union allows both types, so items may become a mix of string and numbers, even if only one was intended.
+
+⚠️ Why Union Types Can Be Risky Here
+
+If your items field is declared like:
+items: string[] | number[]
+
+➤ Then Typescript expects only all strings or all numbers.
+➤ But if your method accepts string | number, htis lets you mix types during .push() operations, breaking the contract.
+
+this._items = []; // Initially empty
+this.addItem("Apple"); // Adds string
+this.addItem(42);       // Now it's mixed: ❌ Not allowed for `string[] | number[]`
+
+✅ When to Use What
+| Use Case                                                                                               | Use Type      |
+| ------------------------------------------------------------------------------------------------------ | ------------- |
+| A class/method that works with **one consistent type**, but needs to be reused for **different types** | ✅ Generics    |
+| A value that can be **one of many types** at the same time (e.g., config input, error types)           | ✅ Union Types |
+
+💡 Interview Insight:
+Generics provide parametric polymorphism — type determined at usage.
+Union types provide ad hoc polymorphism — type can vary at runtime.
+
+🎓 TypeScript Built-in Generics: Partial & Readonly
+#####################################################
+🔹 Partial<T>
+✅ Purpose: Make all properties of a type optional.
+📦 Use Case: When updating or modifying only some fields of an object, not all.
+
+🧱 Example:
+interface UserSettings{
+  username:string;
+  email:string;
+  darkMode:string;
+  language:string;
+}
+
+// Normally, you'd need to pass all fields
+const user: UserSettings = {
+  username: "John Smith",
+  email: "johnsmith@gmail.com",
+  darkMode: false,
+  language: "en"
+};
+
+// Function to update only part of the settings
+function updateUserSettings(settings: Partial<UserSettings>) {
+  console.log("Updating:", settings);
+}
+
+updateUserSettings({
+  darkMode: true,
+  language: "fr"
+});
+
+🧠 Why Useful:
+➤ Accepts parital data like form updates or settings patches.
+➤ Prevents need to provide the full object.
+➤ Does not mutate the original type- just temporarily makes fields optional.
+
+🔹 Readonly<T>
+✅ Purpose: Makes all properties of a type immutable(cannot be changed after assignment).
+
+🧱 Example: With Arrays
+const arr:Readonly<string[]>=["John", "Mark"];
+arr.push("Mary"); //❌ Error: Property 'push' does not exist
+
+🧱 Example: With Objects
+interface UserSettings {
+  username: string;
+  email: string;
+  darkMode: boolean;
+  language: string;
+}
+
+const user: Readonly<UserSettings> = {
+  username: "John",
+  email: "john@gmail.com",
+  darkMode: false,
+  language: "en"
+};
+
+user.username = "Steve"; // ❌ Error: Cannot assign to 'username'
+
+🧠 Why Useful:
+➤ Prevents accidental mutation of data.
+➤ Helps with immutability in functional programming or state management.
+➤ Clear contracts: ensures certain objects are read-only after creation.
