@@ -2723,3 +2723,225 @@ user.username = "Steve"; // ❌ Error: Cannot assign to 'username'
 ➤ Prevents accidental mutation of data.
 ➤ Helps with immutability in functional programming or state management.
 ➤ Clear contracts: ensures certain objects are read-only after creation.
+
+✨ TypeScript Decorators (Introduction)
+#########################################
+A decorator in Typescript is a function that modifies or enhances the behavior of:
+1. Classes
+2. Methods
+3. Properties
+4. Parameters
+Decorators are executed at runtime and prefixed with @.
+
+🔧 How to Enable Decorators
+Open tsconfig.json
+
+Enable experimental support: "experimentalDecorators": true
+
+🔸 Class Decorator: Basic Example
+✅ Goal:
+Log a message whenever the class is loaded.
+
+🧱 Code:
+//Decorator function
+function Logger(target:Function){
+  console.log("Logging...");
+  console.log(target); // 👉 Logs the class constructor
+}
+
+//Applying the decorator
+@Logger
+class User{
+  name:string="John";
+  age:number=28;
+
+  constructor(){
+    console.log("User class constructor called");
+  }
+}
+
+//Creating an instance
+const user1=new User();
+
+🧠 Output:
+Logging...
+[class User]
+User class constructor called
+➤ Even if no instance is created, the decorator still runs when the class is parsed!
+
+🔹 How It Works
+➤ @Logger runs before the class is instantiated.
+➤ The decorator receives the constructor function as its argument.
+➤ The decorator does not need to be called like Logger() unless you're passing arguments. 
+
+🧠Decorator Factory
+#####################
+➤ A function that returns a decorator function.
+➤ It allows you to pass parameters or configuarations to decorators.
+➤ It's useful when you want customized behavior per usuage.
+
+🧠 Why Not Just Use a Decorator Function?
+If you write:
+
+@logger
+class User {}
+
+➤ You are not passing any parameters to logger. It's just a plain decorator.
+➤ But when if you want to pass a custom message like:
+
+@loggerDecorator("This is a custom logger")
+clas User{}
+Then you need a decorator factory.
+
+🏗️ Syntax of a Decorator Factory
+function loggerDecorator(message:string){
+  return function(constructor:Function){
+    console.log(message); //custom behavior
+  };
+}
+
+Usage:
+@loggerDecorator("This is custom logger")
+class User {
+  constructor() {
+    console.log("User constructor called");
+  }
+}
+
+🟡 Output:
+This is custom logger
+User constructor called
+
+Key Idea:
+Outer function → Accepts custom data.
+Inner function → Is the actual decorator, called by TypeScript.
+
+✅ Why Use Decorator Factory?
+➤ To pass dynamic values or configuration into the decorator.
+➤ To reuse the decorator logic with different parameters.
+
+✅ Important Notes:
+You must call the outer factory function with () to get the actual decorator.
+
+Example:
+@loggerDecorator("Logging user...")
+class User {}
+
+✅DOM-based decorator factory
+##################################
+1. 📦 HTML Setup
+<!-- index.html -->
+<div id="container"></div>
+
+2. ⚙️ Decorator Factory Definition
+function Template(template:string, elementId:string){
+  return function(target:any){
+    const u=new target(); //Create instance of the class
+
+    const container=document.getElementById(elementId);
+    if(container){
+      container.innerHTML=template;
+
+      const h2=container.querySelector("h2");
+      if(h2){
+        h2.textContent=`Hello Mr ${u.name}`;
+      }
+    }
+  };
+}
+
+This function returnsthe actual decorators.
+It inserts a given HTML template into a DOM element.
+If the template includes an <h2>, it fills it with the user's name from the class instance.
+
+3. 👤 Class with Decorator Applied
+@Template("<h2>Dynamic Header</h2><button>Click</button>", "container")
+class User {
+  name = "John";
+
+  constructor() {
+    console.log("User constructor called");
+  }
+}
+
+➤ When User class is defined, the decorator runs.
+➤ It inserts a dynamic HTML header into the #container div
+➤ Then it updates the H2 text using User's name.
+
+🧠 Key Concepts Highlighted
+| Concept               | Description                                                                 |
+| --------------------- | --------------------------------------------------------------------------- |
+| **Decorator Factory** | Allows passing arguments like template string and element ID                |
+| **Target**            | Refers to the class constructor when decorating a class                     |
+| **DOM Access**        | Uses `getElementById` and `querySelector` to access and manipulate elements |
+| **Dynamic Behavior**  | Injects content and updates it using class instance properties              |
+
+🔁 Angular Analogy
+In Angular:
+
+@Component({
+  selector: 'app-root',
+  template: `<h2>Hello {{name}}</h2>`
+})
+class AppComponent {
+  name = 'John';
+}
+In your example:
+
+@Template("<h2>Dynamic Header</h2>", "container")
+class User {
+  name = "John";
+}
+👉 Decorator + Template + DOM Element — the same fundamental idea, just implemented manually.
+
+🔧 Using Multiple Decorators in TypeScript
+############################################
+
+✅ Syntax: Multiple Decorators on a Class
+@Logger('Logging...')
+@Template('<h1>User Component</h1>', 'app')
+class User {
+  constructor() {
+    console.log('User class Constructor called');
+  }
+}
+
+📌 Decorator Factory vs Decorator Function
+| Type                   | What it does                     | When it runs           |
+| ---------------------- | -------------------------------- | ---------------------- |
+| Decorator Factory  | Returns the actual decorator     | Runs top to bottom |
+| Decorator Function | Modifies class/function/property | Runs bottom to top |
+
+📋 Execution Order
+Given:
+
+@Logger('Logger Decorator')  // 1st decorator (top)
+@Template('<div>Hello</div>', 'app') // 2nd decorator (bottom)
+class User {}
+
+1️⃣ Decorator Factory Execution (Top to Bottom):
+Logger Decorator Factory runs first
+Template Decorator Factory runs second
+
+2️⃣ Decorator Function Execution (Bottom to Top):
+Template Decorator runs first
+Logger Decorator runs second
+
+🧪 Console Output Example
+When decorators are written like:
+
+@Logger()
+@Template()
+class User {}
+
+The console will show:
+
+Logger decorator factory
+Template decorator factory
+Template decorator called
+Logger decorator called
+
+🧩 Why Is Decorator Execution Bottom to Top?
+Typescript(and Javascript) follows the stack model for decorator evaluation:
+➤ Decorators are applied in the order of evaluation stack, so the last one(at the bottom) is pushed to the top of the call stack and executed first.
+
