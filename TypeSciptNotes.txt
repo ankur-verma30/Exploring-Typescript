@@ -2896,7 +2896,6 @@ class User {
 
 🔧 Using Multiple Decorators in TypeScript
 ############################################
-
 ✅ Syntax: Multiple Decorators on a Class
 @Logger('Logging...')
 @Template('<h1>User Component</h1>', 'app')
@@ -2945,3 +2944,263 @@ Logger decorator called
 Typescript(and Javascript) follows the stack model for decorator evaluation:
 ➤ Decorators are applied in the order of evaluation stack, so the last one(at the bottom) is pushed to the top of the call stack and executed first.
 
+🏷️ Property Decorators in TypeScript
+#####################################
+➤ A property decorator is a function applied to a class property to intercept, modify, or enhance its behavior.
+➤ It is invoked when the class is defined, not when instances are created.
+
+🧪 Basic Syntax
+function capitalize(target:any, propertyKey:string){
+  console.log("Capitalize decorator called");
+  console.log("Target: ", target);
+  console.log("Property Key:", propertyKey);
+}
+
+class Product{
+  @capitalize
+  name:string;
+  constructor(name:string){
+    this.name=name;
+  }
+}
+
+⚙️ Parameters of Property Decorator
+| Parameter     | Description                                                            |
+| ------------- | ---------------------------------------------------------------------- |
+| `target`      | Prototype object (for instance properties) or constructor (for static) |
+| `propertyKey` | Name of the property being decorated                                   |
+
+🧠 Static vs Instance Property Target
+| Property Type     | `target` Value               |
+| ----------------- | ---------------------------- |
+| Instance property | `Class.prototype` (object)   |
+| Static property   | Constructor function (class) |
+
+✨ Practical Example: Capitalize a String Property
+function capitalize(target:any, propertyKey:string):any{
+  let value:string;
+
+  const getter = () =>{
+    return value.charAt(0).toUpperCase();
+  };
+
+  const setter=(newVal:string) =>{
+    value=newVal.toLowerCase();
+  }
+
+  Object.defineProperty(target, propertyKey, {
+    get: getter,
+    set: setter,
+    enumerable: true,
+    configurable: true
+  });
+}
+
+✅ Usage
+class Product{
+  @capitalize
+  name:string;
+
+  constructor(name:string){
+    this.name=name;
+  }
+}
+
+const p1=new Product("apple");
+console.log(p.name); // Output Apple
+
+🧪 Behavior Breakdown
+➤ When p.name="apple" is called: Setter saves it as "apple" (all lowercase).
+
+➤When p.name is accessed: Getter capitalize the first letter: "Apple"
+
+🧠 Interview Insight
+Q: What does a property decorator return?
+A: It can optionally return a property descriptor (object with get, set, etc.) — mostly for advanced use like defining accessors.
+
+Q: When is a property decorator executed?
+A: At class definition time, not during instance creation.
+
+📌 Decorator Return Type Rule
+To avoid TS errors:
+
+function myDecorator(...): any {
+  // must return `void` or a descriptor-like object
+}
+
+🏷️ Access Decorators in TypeScript
+####################################
+We created an @accessLogger decorator that:
+Logs a message when a getter or setter is accessed.
+Internally wraps the original get or set method and adds custom logic(console log) before calling the original behaviour.
+
+🧠 Why does it work on both getter and setter?
+Because you used the decorator on one accessor (get price) but getters and setters share the same proeprty name (price). Typescript passes both getter and setter functions in the descriptor,, allowing you to modify both from the same decorator.
+
+🧩 Now, What is target in This Context?
+When using decorator in Typescript:
+function accessLogger(target:any, name:string, descriptor:PropertyDescriptor){
+  console.log(target); 
+  console.log(name);  // property name like price
+  console.log(descriptor); // contains get/set, configurable, enumerable
+}
+
+🔍 target meaning:
+| Scenario                      | `target` refers to...                     |
+| ----------------------------- | ----------------------------------------- |
+| Used on instance property | The class prototype object            |
+| Used on static property   | The class constructor function itself |
+
+So when the accessor is Not static, target is the prototype of the class, meaning
+console.log(target=== Product.prototype); //true
+
+This is important if you ever need to reflect metadata or attach new properties on the class from inside the decorator.
+
+🧪 Practical Use Case
+If we want to track access to certain sensitive fields (like price, password, etc) for logging or auditing purpose in production. Using accessor decorators like this gives you centralized control.
+
+✍ Final Decorator Structure (Simplified):
+function accessLogger(target:any, name:string, descriptor:PropertyDescriptor){
+  const originalGet=descriptor.get;
+  const originalSet=descriptor.set;
+
+  descriptor.get=function(){
+    console.log(`Getting {name}`);
+    return originalGet?.call(this);
+  }
+
+   descriptor.set = function (value: number) {
+    console.log(`Setting ${name} to ${value}`);
+    originalSet?.call(this, value);
+  };
+
+  return descriptor;
+}
+
+🏷️ Using It in a Class
+class Product{
+private _price:number;
+
+constructor (_price:number){
+  this._price=_price;
+}
+
+@accessLogger
+get price(){
+  return this._price;
+}
+
+set price(value:number){
+  if(value<0) throw new Error("Price cannot be negative");
+  this._price=value;
+}
+}
+
+🧪 Usage
+const p = new Product(100);
+
+console.log(p.price); // Triggers decorated getter
+p.price = 150;        // Triggers decorated setter
+
+🧾 Output Will Be:
+Target (prototype): Product {}
+Property Name: price
+Descriptor: { get: ƒ, set: ƒ, enumerable: false, configurable: true }
+
+🔍 Getting value of "price" 100
+📝 Setting value of "price" to 150
+
+✅ Using Decorators on Methods and Method Parameters in TypeScript
+####################################################################
+🔹 Example Class
+class Person{
+  constructor(private _name:string){}
+
+  @Logger
+  calculateAge(@ParamDecorator dob:string){}
+}
+
+🧠 Concept Summary
+
+1. Method Parameter Decorator
+A decorator placed directly before a method parameter.
+
+function ParamDecorator(target:any, methodName:string, parameterIndex:number){
+  console.log("Param Decorator called");
+  console.log("Target: ",target);   // Prototype object
+  console.log("Method name: ", methodName); // "calculateAge"
+  console.log("Parameter Index: ", parameterIndex); // e.g., 0
+}
+
+target: Prototype object (for instance method)
+methodName: Name of the method the parameter belongs to 
+parameterIndex: Position of the parameter in the method signature(0-based);
+
+2. Method Decorator
+A decorator applied on a method itself.
+
+function Logger(target:any, methodName:string, descriptor:PropertyDescriptor){
+  console.log("Logger Decorator called");
+  console.log("Target: ",target);   // Prototype object or class constructor
+  console.log("Method name: ", methodName); // "calculateAge"
+  console.log("Parameter Index: ", parameterIndex); // PropertyDescriptor object
+}
+
+➤ target: Prototype object (for instance methods)
+Constructor function for static methods
+➤ methodName: Name of the decorator method
+➤ descriptor: A PropertyDescriptor that includes:
+1. value: Method definition
+2. writable, enumerable, configurable
+
+🔄 Behavior Based on Method Type
+| Method Type     | `target` Value                  |
+| --------------- | ------------------------------- |
+| Instance method | `Person.prototype`              |
+| Static method   | `Person` (constructor function) |
+
+📦 What Can You Do With This?
+➤ Log method calls
+➤ Validate parameter inputs
+➤ Modify method behavior (by editing descriptor.value)
+➤ Track usage of certain 
+
+💡 Code Example:
+// Parameter Decorator
+function LogParameter(target: any, methodName: string, parameterIndex: number) {
+  console.log(`📌 Parameter decorator called on:`);
+  console.log(`➡ Method: ${methodName}, Parameter Index: ${parameterIndex}`);
+}
+
+// Method Decorator
+function LogMethod(target: any, methodName: string, descriptor: PropertyDescriptor) {
+  const originalMethod = descriptor.value;
+
+  descriptor.value = function (...args: any[]) {
+    console.log(`🚀 Method "${methodName}" called with arguments:`, args);
+    return originalMethod.apply(this, args);
+  };
+
+  return descriptor;
+}
+
+// Class
+class Calculator {
+  @LogMethod
+  multiply(@LogParameter a: number, @LogParameter b: number): number {
+    return a * b;
+  }
+}
+
+// Instantiate and Call
+const calc = new Calculator();
+const result = calc.multiply(4, 5);
+console.log("✅ Result:", result);
+
+🧠 Output (when run):
+📌 Parameter decorator called on:
+➡ Method: multiply, Parameter Index: 1
+📌 Parameter decorator called on:
+➡ Method: multiply, Parameter Index: 0
+🚀 Method "multiply" called with arguments: [4, 5]
+✅ Result: 20
